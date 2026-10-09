@@ -7,7 +7,7 @@ from django.contrib import auth
 from django.test import Client, RequestFactory, TestCase
 from django.urls import reverse
 
-from djangoblog.utils import get_sha256
+from teachingplatform.utils import get_sha256
 from oauth.models import OAuthConfig
 from oauth.oauthmanager import BaseOauthManager
 

@@ -484,7 +484,7 @@ class UserDeletionTest(TestCase):
             password='password'
         )
 
-        # 创建用户的文章
+        # 创建用户的教学资源
         category = Category.objects.create(
             name='Category',
             slug='category'
@@ -504,7 +504,7 @@ class UserDeletionTest(TestCase):
         # 删除用户
         user.delete()
 
-        # 验证文章的处理（取决于外键的on_delete设置）
-        # 如果是CASCADE，文章应该被删除
+        # 验证教学资源的处理（取决于外键的on_delete设置）
+        # 如果是CASCADE，教学资源应该被删除
         with self.assertRaises(Article.DoesNotExist):
             Article.objects.get(id=article_id)

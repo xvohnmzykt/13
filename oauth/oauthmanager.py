@@ -6,7 +6,7 @@ from abc import ABCMeta, abstractmethod
 
 import requests
 
-from djangoblog.utils import cache_decorator
+from teachingplatform.utils import cache_decorator
 from oauth.models import OAuthUser, OAuthConfig
 
 logger = logging.getLogger(__name__)

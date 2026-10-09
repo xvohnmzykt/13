@@ -73,7 +73,7 @@ msgstr "last modify time"
 msgid "create source"
 msgstr "create source"
 
-#: .\accounts\models.py:33 .\djangoblog\logentryadmin.py:81
+#: .\accounts\models.py:33 .\teachingplatform\logentryadmin.py:81
 msgid "user"
 msgstr "user"
 
@@ -97,30 +97,31 @@ msgstr ""
 #: .\blog\admin.py:13 .\blog\models.py:92 .\comments\models.py:17
 #: .\oauth\models.py:12
 msgid "author"
-msgstr "author"
+msgstr "publisher"
 
 #: .\blog\admin.py:53
 msgid "Publish selected articles"
-msgstr "Publish selected articles"
+msgstr "Publish selected resources"
 
 #: .\blog\admin.py:54
 msgid "Draft selected articles"
-msgstr "Draft selected articles"
+msgstr "Draft selected resources"
 
 #: .\blog\admin.py:55
 msgid "Close article comments"
-msgstr "Close article comments"
+msgstr "Close resource comments"
 
 #: .\blog\admin.py:56
 msgid "Open article comments"
-msgstr "Open article comments"
+msgstr "Open resource comments"
 
 #: .\blog\admin.py:89 .\blog\models.py:101 .\blog\models.py:183
 #: .\templates\blog\tags\sidebar.html:40
 msgid "category"
-msgstr "category"
+msgstr "course category"
 
-#: .\blog\models.py:20 .\blog\models.py:179 .\templates\share_layout\nav.html:8
+#: .\blog\models.py:20 .\blog\models.py:179
+#: .\templates\share_layout\nav.html:8
 msgid "index"
 msgstr "index"
 
@@ -162,7 +163,7 @@ msgstr "Close"
 
 #: .\blog\models.py:71 .\comments\admin.py:47
 msgid "Article"
-msgstr "Article"
+msgstr "Resource"
 
 #: .\blog\models.py:72
 msgid "Page"
@@ -210,7 +211,7 @@ msgstr "tag"
 
 #: .\blog\models.py:115 .\comments\models.py:21
 msgid "article"
-msgstr "article"
+msgstr "resource"
 
 #: .\blog\models.py:171
 msgid "category name"
@@ -254,11 +255,11 @@ msgstr "sidebar"
 
 #: .\blog\models.py:299
 msgid "site name"
-msgstr "site name"
+msgstr "platform name"
 
 #: .\blog\models.py:305
 msgid "site description"
-msgstr "site description"
+msgstr "platform description"
 
 #: .\blog\models.py:311
 msgid "site seo description"
@@ -266,15 +267,15 @@ msgstr "site seo description"
 
 #: .\blog\models.py:313
 msgid "site keywords"
-msgstr "site keywords"
+msgstr "platform keywords"
 
 #: .\blog\models.py:318
 msgid "article sub length"
-msgstr "article sub length"
+msgstr "resource sub length"
 
 #: .\blog\models.py:319
 msgid "sidebar article count"
-msgstr "sidebar article count"
+msgstr "sidebar resource count"
 
 #: .\blog\models.py:320
 msgid "sidebar comment count"
@@ -282,7 +283,7 @@ msgstr "sidebar comment count"
 
 #: .\blog\models.py:321
 msgid "article comment count"
-msgstr "article comment count"
+msgstr "resource comment count"
 
 #: .\blog\models.py:322
 msgid "show adsense"
@@ -298,7 +299,7 @@ msgstr "open site comment"
 
 #: .\blog\models.py:352
 msgid "Website configuration"
-msgstr "Website configuration"
+msgstr "Platform configuration"
 
 #: .\blog\models.py:360
 msgid "There can only be one configuration"
@@ -352,63 +353,55 @@ msgstr "Thanks for your comment"
 #, python-format
 msgid ""
 "<p>Thank you very much for your comments on this site</p>\n"
-"                    You can visit <a href=\"%(article_url)s\" rel=\"bookmark"
-"\">%(article_title)s</a>\n"
+"                    You can visit <a href=\"%(article_url)s\" rel=\"bookmark\">%(article_title)s</a>\n"
 "                    to review your comments,\n"
 "                    Thank you again!\n"
 "                    <br />\n"
-"                    If the link above cannot be opened, please copy this "
-"link to your browser.\n"
+"                    If the link above cannot be opened, please copy this link to your browser.\n"
 "                    %(article_url)s"
 msgstr ""
 "<p>Thank you very much for your comments on this site</p>\n"
-"                    You can visit <a href=\"%(article_url)s\" rel=\"bookmark"
-"\">%(article_title)s</a>\n"
+"                    You can visit <a href=\"%(resource_url)s\" rel=\"bookmark\">%(resource_title)s</a>\n"
 "                    to review your comments,\n"
 "                    Thank you again!\n"
 "                    <br />\n"
-"                    If the link above cannot be opened, please copy this "
-"link to your browser.\n"
-"                    %(article_url)s"
+"                    If the link above cannot be opened, please copy this link to your browser.\n"
+"                    %(resource_url)s"
 
 #: .\comments\utils.py:26
 #, python-format
 msgid ""
-"Your comment on <a href=\"%(article_url)s\" rel=\"bookmark\">"
-"%(article_title)s</a><br/> has \n"
+"Your comment on <a href=\"%(article_url)s\" rel=\"bookmark\">%(article_title)s</a><br/> has \n"
 "                   received a reply. <br/> %(comment_body)s\n"
 "                    <br/>   \n"
 "                    go check it out!\n"
 "                     <br/>\n"
-"                     If the link above cannot be opened, please copy this "
-"link to your browser.\n"
+"                     If the link above cannot be opened, please copy this link to your browser.\n"
 "                     %(article_url)s\n"
 "                    "
 msgstr ""
-"Your comment on <a href=\"%(article_url)s\" rel=\"bookmark\">"
-"%(article_title)s</a><br/> has \n"
+"Your comment on <a href=\"%(resource_url)s\" rel=\"bookmark\">%(resource_title)s</a><br/> has \n"
 "                   received a reply. <br/> %(comment_body)s\n"
 "                    <br/>   \n"
 "                    go check it out!\n"
 "                     <br/>\n"
-"                     If the link above cannot be opened, please copy this "
-"link to your browser.\n"
-"                     %(article_url)s\n"
+"                     If the link above cannot be opened, please copy this link to your browser.\n"
+"                     %(resource_url)s\n"
 "                    "
 
-#: .\djangoblog\logentryadmin.py:63
+#: .\teachingplatform\logentryadmin.py:63
 msgid "object"
 msgstr "object"
 
-#: .\djangoblog\settings.py:140
+#: .\teachingplatform\settings.py:140
 msgid "English"
 msgstr "English"
 
-#: .\djangoblog\settings.py:141
+#: .\teachingplatform\settings.py:141
 msgid "Simplified Chinese"
 msgstr "Simplified Chinese"
 
-#: .\djangoblog\settings.py:142
+#: .\teachingplatform\settings.py:142
 msgid "Traditional Chinese"
 msgstr "Traditional Chinese"
 
@@ -436,30 +429,24 @@ msgstr "already exists"
 #, python-format
 msgid ""
 "\n"
-"     <p>Congratulations, you have successfully bound your email address. You "
-"can use\n"
-"      %(oauthuser_type)s to directly log in to this website without a "
-"password.</p>\n"
+"     <p>Congratulations, you have successfully bound your email address. You can use\n"
+"      %(oauthuser_type)s to directly log in to this website without a password.</p>\n"
 "       You are welcome to continue to follow this site, the address is\n"
 "        <a href=\"%(site)s\" rel=\"bookmark\">%(site)s</a>\n"
 "            Thank you again!\n"
 "            <br />\n"
-"        If the link above cannot be opened, please copy this link to your "
-"browser.\n"
+"        If the link above cannot be opened, please copy this link to your browser.\n"
 "        %(site)s\n"
 "    "
 msgstr ""
 "\n"
-"     <p>Congratulations, you have successfully bound your email address. You "
-"can use\n"
-"      %(oauthuser_type)s to directly log in to this website without a "
-"password.</p>\n"
+"     <p>Congratulations, you have successfully bound your email address. You can use\n"
+"      %(oauthuser_type)s to directly log in to this website without a password.</p>\n"
 "       You are welcome to continue to follow this site, the address is\n"
 "        <a href=\"%(site)s\" rel=\"bookmark\">%(site)s</a>\n"
 "            Thank you again!\n"
 "            <br />\n"
-"        If the link above cannot be opened, please copy this link to your "
-"browser.\n"
+"        If the link above cannot be opened, please copy this link to your browser.\n"
 "        %(site)s\n"
 "    "
 
@@ -477,8 +464,7 @@ msgid ""
 "\n"
 "                 Thank you again!\n"
 "                 <br />\n"
-"                 If the link above cannot be opened, please copy this link "
-"to your browser.\n"
+"                 If the link above cannot be opened, please copy this link to your browser.\n"
 "                  <br />\n"
 "                 %(url)s\n"
 "                "
@@ -490,8 +476,7 @@ msgstr ""
 "\n"
 "                 Thank you again!\n"
 "                 <br />\n"
-"                 If the link above cannot be opened, please copy this link "
-"to your browser.\n"
+"                 If the link above cannot be opened, please copy this link to your browser.\n"
 "                  <br />\n"
 "                 %(url)s\n"
 "                "
@@ -515,12 +500,12 @@ msgstr "Binding successful"
 #: .\oauth\views.py:247
 #, python-format
 msgid ""
-"Congratulations, you have successfully bound your email address. You can use "
-"%(oauthuser_type)s to directly log in to this website without a password. "
+"Congratulations, you have successfully bound your email address. You can use"
+" %(oauthuser_type)s to directly log in to this website without a password. "
 "You are welcome to continue to follow this site."
 msgstr ""
-"Congratulations, you have successfully bound your email address. You can use "
-"%(oauthuser_type)s to directly log in to this website without a password. "
+"Congratulations, you have successfully bound your email address. You can use"
+" %(oauthuser_type)s to directly log in to this website without a password. "
 "You are welcome to continue to follow this site."
 
 #: .\templates\account\forget_password.html:7
@@ -556,7 +541,7 @@ msgstr "back to the homepage"
 #: .\templates\blog\article_archives.html:7
 #: .\templates\blog\article_archives.html:24
 msgid "article archive"
-msgstr "article archive"
+msgstr "resource archive"
 
 #: .\templates\blog\article_archives.html:32
 msgid "year"
@@ -594,13 +579,11 @@ msgstr "by"
 #, python-format
 msgid ""
 "\n"
-"               title=\"View all articles published by "
-"%(article.author.username)s\"\n"
+"               title=\"View all articles published by %(article.author.username)s\"\n"
 "                    "
 msgstr ""
 "\n"
-"               title=\"View all articles published by "
-"%(article.author.username)s\"\n"
+"               title=\"View all resources published by %(resource.author.username)s\"\n"
 "                    "
 
 #: .\templates\blog\tags\article_meta_info.html:44
@@ -613,15 +596,15 @@ msgstr "edit"
 
 #: .\templates\blog\tags\article_pagination.html:4
 msgid "article navigation"
-msgstr "article navigation"
+msgstr "resource navigation"
 
 #: .\templates\blog\tags\article_pagination.html:9
 msgid "earlier articles"
-msgstr "earlier articles"
+msgstr "earlier resources"
 
 #: .\templates\blog\tags\article_pagination.html:12
 msgid "newer articles"
-msgstr "newer articles"
+msgstr "newer resources"
 
 #: .\templates\blog\tags\article_tag_list.html:5
 msgid "tags"
@@ -641,7 +624,7 @@ msgstr "published on"
 
 #: .\templates\blog\tags\sidebar.html:65
 msgid "recent articles"
-msgstr "recent articles"
+msgstr "recent resources"
 
 #: .\templates\blog\tags\sidebar.html:77
 msgid "bookmark"
@@ -682,7 +665,7 @@ msgstr "quick login"
 
 #: .\templates\share_layout\nav.html:26
 msgid "Article archive"
-msgstr "Article archive"
+msgstr "Resource archive"
 
 #: templates/blog/article_detail.html templates/blog/article_index.html
 msgid "Discover more"

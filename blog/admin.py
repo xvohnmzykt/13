@@ -87,7 +87,7 @@ class ArticlelAdmin(admin.ModelAdmin):
             url = obj.get_full_url()
             return url
         else:
-            from djangoblog.utils import get_current_site
+            from teachingplatform.utils import get_current_site
             site = get_current_site().domain
             return site
 
@@ -138,6 +138,6 @@ class BlogSettingsAdmin(admin.ModelAdmin):
         """保存设置时清除缓存"""
         super().save_model(request, obj, form, change)
         # 确保缓存被清除
-        from djangoblog.utils import cache
+        from teachingplatform.utils import cache
         cache.clear()
         self.message_user(request, '设置已保存，缓存已清除')

@@ -8,7 +8,7 @@ from django.urls import reverse
 
 from accounts.admin import BlogUserAdmin
 from accounts.models import BlogUser
-from djangoblog.test_base import BaseTestCase, AdminTestMixin
+from teachingplatform.test_base import BaseTestCase, AdminTestMixin
 
 
 class BlogUserAdminTest(BaseTestCase, AdminTestMixin):

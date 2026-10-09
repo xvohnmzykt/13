@@ -5,7 +5,7 @@ from django.core.cache import cache
 from django.utils.translation import gettext
 from django.utils.translation import gettext_lazy as _
 
-from djangoblog.utils import send_email
+from teachingplatform.utils import send_email
 
 _code_ttl = timedelta(minutes=5)
 

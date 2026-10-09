@@ -25,7 +25,7 @@ RUN cd frontend && npm run build
 FROM python:3.11
 
 ENV PYTHONUNBUFFERED=1
-WORKDIR /code/djangoblog/
+WORKDIR /code/teachingplatform/
 
 # Install system dependencies
 RUN apt-get update && \
@@ -43,16 +43,16 @@ RUN pip install --upgrade pip && \
 COPY . .
 
 # Remove any old build artifacts that might have been copied
-RUN rm -rf /code/djangoblog/blog/static/blog/dist
+RUN rm -rf /code/teachingplatform/blog/static/blog/dist
 
 # Copy built frontend assets from frontend-builder stage
-COPY --from=frontend-builder /app/blog/static/blog/dist /code/djangoblog/blog/static/blog/dist
+COPY --from=frontend-builder /app/blog/static/blog/dist /code/teachingplatform/blog/static/blog/dist
 
 # Verify the frontend assets were copied correctly
-RUN ls -la /code/djangoblog/blog/static/blog/dist/css/ && \
-    cat /code/djangoblog/blog/static/blog/dist/.vite/manifest.json
+RUN ls -la /code/teachingplatform/blog/static/blog/dist/css/ && \
+    cat /code/teachingplatform/blog/static/blog/dist/.vite/manifest.json
 
 # Set execute permission for entrypoint
-RUN chmod +x /code/djangoblog/deploy/entrypoint.sh
+RUN chmod +x /code/teachingplatform/deploy/entrypoint.sh
 
-ENTRYPOINT ["/code/djangoblog/deploy/entrypoint.sh"]
+ENTRYPOINT ["/code/teachingplatform/deploy/entrypoint.sh"]

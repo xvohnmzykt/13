@@ -2,7 +2,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: web-nginx-config
-  namespace: djangoblog
+  namespace: teachingplatform
 data:
   nginx.conf: |
     user  nginx;
@@ -41,15 +41,15 @@ data:
         # Include server configurations
         include /etc/nginx/conf.d/*.conf;
     }
-  djangoblog.conf: |
+  teachingplatform.conf: |
     server {
-        server_name lylinux.net;
-        root /code/djangoblog/collectedstatic/;
+        server_name teaching-platform.example.com;
+        root /code/teachingplatform/collectedstatic/;
         listen 80;
         keepalive_timeout 70;
         location /static/ {
             expires max;
-            alias /code/djangoblog/collectedstatic/;
+            alias /code/teachingplatform/collectedstatic/;
         }
 
         location ~* (robots\.txt|ads\.txt|favicon\.ico|favion\.ico|crossdomain\.xml|google93fd32dbd906620a\.html|BingSiteAuth\.xml|baidu_verify_Ijeny6KrmS\.html)$ {
@@ -66,31 +66,31 @@ data:
             proxy_set_header X-NginX-Proxy true;
             proxy_redirect off;
             if (!-f $request_filename) {
-                proxy_pass http://djangoblog:8000;
+                proxy_pass http://teachingplatform:8000;
                 break;
             }
         }
     }
     server {
-      server_name www.lylinux.net;
+      server_name www.teaching-platform.example.com;
       listen 80;
-      return 301 https://lylinux.net$request_uri;
+      return 301 https://teaching-platform.example.com$request_uri;
     }
-  resource.lylinux.net.conf: |
+  teaching-platform.example.com.conf: |
     server {
         index index.html index.htm;
-        server_name resource.lylinux.net;
+        server_name teaching-platform.example.com;
         root /resource/;
 
-        location /djangoblog/ {
-            alias /code/djangoblog/collectedstatic/;
+        location /teachingplatform/ {
+            alias /code/teachingplatform/collectedstatic/;
         }
 
         access_log off;
         error_log off;
-        include lylinux/resource.conf;
+        include teachingplatform/resource.conf;
     }
-  lylinux.resource.conf: |
+  teachingplatform.resource.conf: |
     expires max;
     access_log        off;
     log_not_found     off;
@@ -102,10 +102,10 @@ data:
 apiVersion: v1
 kind: ConfigMap
 metadata:
-  name: djangoblog-env
-  namespace: djangoblog
+  name: teachingplatform-env
+  namespace: teachingplatform
 data:
-  DJANGO_MYSQL_DATABASE: djangoblog
+  DJANGO_MYSQL_DATABASE: teachingplatform
   DJANGO_MYSQL_USER: root
   DJANGO_MYSQL_PASSWORD: QQQQwww123!@#
   DJANGO_MYSQL_HOST: db
@@ -113,7 +113,7 @@ data:
   DJANGO_REDIS_URL: "redis:6379"
   DJANGO_DEBUG: "False"
   MYSQL_ROOT_PASSWORD: QQQQwww123!@#
-  MYSQL_DATABASE: djangoblog
+  MYSQL_DATABASE: teachingplatform
   MYSQL_PASSWORD: QQQQwww123!@#
   DJANGO_SECRET_KEY: k8s-test-secret-key-12345678
 

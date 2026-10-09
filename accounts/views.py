@@ -16,8 +16,8 @@ from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views import View
 
-from djangoblog.utils import send_email, get_sha256, get_current_site, generate_code, delete_sidebar_cache
-from djangoblog.base_views import SecureFormView, LoginFormView, LogoutRedirectView
+from teachingplatform.utils import send_email, get_sha256, get_current_site, generate_code, delete_sidebar_cache
+from teachingplatform.base_views import SecureFormView, LoginFormView, LogoutRedirectView
 from . import utils
 from .forms import RegisterForm, LoginForm, ForgetPasswordForm, ForgetPasswordCodeForm
 from .models import BlogUser

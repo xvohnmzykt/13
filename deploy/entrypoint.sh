@@ -1,10 +1,10 @@
 #!/usr/bin/env bash
-NAME="djangoblog"
-DJANGODIR=/code/djangoblog
+NAME="teachingplatform"
+DJANGODIR=/code/teachingplatform
 USER=root
 GROUP=root
 NUM_WORKERS=1
-DJANGO_WSGI_MODULE=djangoblog.wsgi
+DJANGO_WSGI_MODULE=teachingplatform.wsgi
 
 
 echo "Starting $NAME as `whoami`"

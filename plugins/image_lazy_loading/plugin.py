@@ -1,16 +1,16 @@
 import re
 import hashlib
 from urllib.parse import urlparse
-from djangoblog.plugin_manage.base_plugin import BasePlugin
-from djangoblog.plugin_manage import hooks
-from djangoblog.plugin_manage.hook_constants import ARTICLE_CONTENT_HOOK_NAME
+from teachingplatform.plugin_manage.base_plugin import BasePlugin
+from teachingplatform.plugin_manage import hooks
+from teachingplatform.plugin_manage.hook_constants import ARTICLE_CONTENT_HOOK_NAME
 
 
 class ImageOptimizationPlugin(BasePlugin):
     PLUGIN_NAME = '图片性能优化插件'
-    PLUGIN_DESCRIPTION = '自动为文章中的图片添加懒加载、异步解码等性能优化属性，显著提升页面加载速度。'
+    PLUGIN_DESCRIPTION = '自动为教学资源中的图片添加懒加载、异步解码等性能优化属性，显著提升页面加载速度。'
     PLUGIN_VERSION = '1.0.0'
-    PLUGIN_AUTHOR = 'liangliangyy'
+    PLUGIN_AUTHOR = '在线教学资源平台'
 
     def __init__(self):
         # 插件配置
@@ -29,7 +29,7 @@ class ImageOptimizationPlugin(BasePlugin):
 
     def optimize_images(self, content, *args, **kwargs):
         """
-        优化文章中的图片标签
+        优化教学资源中的图片标签
         """
         if not content:
             return content
@@ -114,9 +114,9 @@ class ImageOptimizationPlugin(BasePlugin):
                 # 移除常见的无意义字符
                 clean_name = re.sub(r'[0-9a-f]{8,}', '', filename)  # 移除长hash
                 clean_name = re.sub(r'[_-]+', ' ', clean_name).strip()
-                attrs['alt'] = clean_name if clean_name else '文章图片'
+                attrs['alt'] = clean_name if clean_name else '资源图片'
             else:
-                attrs['alt'] = '文章图片'
+                attrs['alt'] = '资源图片'
 
         # 5. 外部图片优化
         if self.config['optimize_external_images'] and 'src' in attrs:
@@ -172,7 +172,7 @@ class ImageOptimizationPlugin(BasePlugin):
         获取当前网站域名
         """
         try:
-            from djangoblog.utils import get_current_site
+            from teachingplatform.utils import get_current_site
             return get_current_site().domain
         except:
             return ''

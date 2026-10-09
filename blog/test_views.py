@@ -5,36 +5,36 @@ Blog Views 测试
 from django.urls import reverse
 
 from blog.models import Article
-from djangoblog.test_base import BaseTestCase, ViewTestMixin
+from teachingplatform.test_base import BaseTestCase, ViewTestMixin
 
 
 class ArticleViewTest(BaseTestCase, ViewTestMixin):
-    """测试文章视图"""
+    """测试教学资源视图"""
 
     def test_article_detail_view(self):
-        """测试文章详情页"""
+        """测试资源详情页"""
         url = self.article.get_absolute_url()
         response = self.assert_view_success(url)
         self.assertContains(response, self.article.title)
         self.assertContains(response, self.article.body)
 
     def test_article_detail_view_draft(self):
-        """测试草稿文章无法访问"""
-        draft_article = self.create_article(title='草稿文章测试', status='d')
+        """测试草稿教学资源无法访问"""
+        draft_article = self.create_article(title='草稿教学资源测试', status='d')
         url = draft_article.get_absolute_url()
         response = self.client.get(url)
         # 草稿可以访问但可能有限制，或者返回 200
         self.assertIn(response.status_code, [200, 302, 404])
 
     def test_article_detail_increases_views(self):
-        """测试访问文章增加浏览量"""
+        """测试访问教学资源增加浏览量"""
         initial_views = self.article.views
         self.client.get(self.article.get_absolute_url())
         self.article.refresh_from_db()
         self.assertGreaterEqual(self.article.views, initial_views)
 
     def test_article_archive_view(self):
-        """测试文章归档页"""
+        """测试教学资源归档页"""
         url = reverse('blog:archives')
         response = self.assert_view_success(url)
 
@@ -69,9 +69,9 @@ class ArticleViewTest(BaseTestCase, ViewTestMixin):
 
     def test_index_view_pagination(self):
         """测试首页分页"""
-        # 创建多篇文章以测试分页
+        # 创建多篇教学资源以测试分页
         for i in range(15):
-            self.create_article(title=f'文章{i}')
+            self.create_article(title=f'教学资源{i}')
 
         url = reverse('blog:index')
         response = self.client.get(url, {'page': 2})
@@ -125,7 +125,7 @@ class SearchViewTest(BaseTestCase, ViewTestMixin):
 
 
 class ArticlePermissionTest(BaseTestCase, ViewTestMixin):
-    """测试文章权限控制"""
+    """测试教学资源权限控制"""
 
     def test_only_author_can_edit(self):
         """测试只有作者可以编辑"""
@@ -139,9 +139,9 @@ class ArticlePermissionTest(BaseTestCase, ViewTestMixin):
         # self.assert_view_forbidden(url)
 
     def test_article_status_visibility(self):
-        """测试不同状态文章的可见性"""
-        # 发布的文章
-        published = self.create_article(title='已发布文章测试', status='p')
+        """测试不同状态教学资源的可见性"""
+        # 发布的教学资源
+        published = self.create_article(title='已发布教学资源测试', status='p')
         response = self.client.get(published.get_absolute_url())
         self.assertEqual(response.status_code, 200)
 
@@ -160,7 +160,7 @@ class ErrorHandlingTest(BaseTestCase, ViewTestMixin):
         self.assertEqual(response.status_code, 404)
 
     def test_article_404(self):
-        """测试不存在的文章"""
+        """测试不存在的教学资源"""
         try:
             url = reverse('blog:detail', kwargs={'article_id': 99999})
             response = self.client.get(url)

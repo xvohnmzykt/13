@@ -14,7 +14,7 @@ export default () => ({
 
   // ==================== 初始化 ====================
   init() {
-    // 从DOM中获取文章ID
+    // 从DOM中获取教学资源ID
     this.articleId = this.$el.dataset.articleId;
 
     if (this.articleId) {

@@ -1,5 +1,5 @@
 /**
- * 文章推荐插件JavaScript
+ * 教学资源推荐插件JavaScript
  */
 
 (function() {

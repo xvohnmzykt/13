@@ -5,7 +5,7 @@ from django.utils.translation import gettext_lazy as _
 
 from accounts.models import BlogUser
 from blog.models import Article, Category
-from djangoblog.utils import *
+from teachingplatform.utils import *
 from . import utils
 
 
@@ -25,13 +25,13 @@ class AccountTest(TestCase):
     def test_validate_account(self):
         site = get_current_site().domain
         user = BlogUser.objects.create_superuser(
-            email="liangliangyy1@gmail.com",
-            username="liangliangyy1",
+            email="teacher1@gmail.com",
+            username="teacher1",
             password="qwer!@#$ggg")
-        testuser = BlogUser.objects.get(username='liangliangyy1')
+        testuser = BlogUser.objects.get(username='teacher1')
 
         loginresult = self.client.login(
-            username='liangliangyy1',
+            username='teacher1',
             password='qwer!@#$ggg')
         self.assertEqual(loginresult, True)
         response = self.client.get('/admin/')

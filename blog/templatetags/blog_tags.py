@@ -15,11 +15,11 @@ from django.utils.safestring import mark_safe
 
 from blog.models import Article, Category, Tag, Links, SideBar, LinkShowType
 from comments.models import Comment
-from djangoblog.utils import CommonMarkdown, sanitize_html
-from djangoblog.utils import cache
-from djangoblog.utils import get_current_site
+from teachingplatform.utils import CommonMarkdown, sanitize_html
+from teachingplatform.utils import cache
+from teachingplatform.utils import get_current_site
 from oauth.models import OAuthUser
-from djangoblog.plugin_manage import hooks
+from teachingplatform.plugin_manage import hooks
 
 logger = logging.getLogger(__name__)
 
@@ -53,14 +53,14 @@ def datetimeformat(data):
 @stringfilter
 def custom_markdown(content):
     """
-    通用markdown过滤器，应用文章内容插件
-    主要用于文章内容处理
+    通用markdown过滤器，应用资源内容插件
+    主要用于资源内容处理
     """
     html_content = CommonMarkdown.get_markdown(content)
     
     # 然后应用插件过滤器优化HTML
-    from djangoblog.plugin_manage import hooks
-    from djangoblog.plugin_manage.hook_constants import ARTICLE_CONTENT_HOOK_NAME
+    from teachingplatform.plugin_manage import hooks
+    from teachingplatform.plugin_manage.hook_constants import ARTICLE_CONTENT_HOOK_NAME
     optimized_html = hooks.apply_filters(ARTICLE_CONTENT_HOOK_NAME, html_content)
     
     return mark_safe(optimized_html)
@@ -76,11 +76,11 @@ def sidebar_markdown(content):
 @register.simple_tag(takes_context=True)
 def render_article_content(context, article, is_summary=False):
     """
-    渲染文章内容，包含完整的上下文信息供插件使用
+    渲染资源内容，包含完整的上下文信息供插件使用
     
     Args:
         context: 模板上下文
-        article: 文章对象
+        article: 教学资源对象
         is_summary: 是否为摘要模式（首页使用）
     """
     if not article or not hasattr(article, 'body'):
@@ -92,7 +92,7 @@ def render_article_content(context, article, is_summary=False):
     # 如果是摘要模式，先截断内容再应用插件
     if is_summary:
         # 从配置中获取摘要长度
-        from djangoblog.utils import get_blog_setting
+        from teachingplatform.utils import get_blog_setting
         from django.template.defaultfilters import truncatechars_html
 
         blogsetting = get_blog_setting()
@@ -102,13 +102,13 @@ def render_article_content(context, article, is_summary=False):
         html_content = truncatechars_html(html_content, summary_length)
     
     # 然后应用插件过滤器，传递完整的上下文
-    from djangoblog.plugin_manage import hooks
-    from djangoblog.plugin_manage.hook_constants import ARTICLE_CONTENT_HOOK_NAME
+    from teachingplatform.plugin_manage import hooks
+    from teachingplatform.plugin_manage.hook_constants import ARTICLE_CONTENT_HOOK_NAME
     
     # 获取request对象
     request = context.get('request')
     
-    # 应用所有文章内容相关的插件
+    # 应用所有资源内容相关的插件
     # 注意：摘要模式下某些插件（如版权声明）可能不适用
     optimized_html = hooks.apply_filters(
         ARTICLE_CONTENT_HOOK_NAME,
@@ -129,7 +129,7 @@ def render_article_content(context, article, is_summary=False):
 
 @register.simple_tag
 def get_markdown_toc(content):
-    from djangoblog.utils import CommonMarkdown
+    from teachingplatform.utils import CommonMarkdown
     body, toc = CommonMarkdown.get_markdown_with_toc(content)
     return mark_safe(toc)
 
@@ -189,12 +189,12 @@ def get_reactions_for_user(comment, user):
 @stringfilter
 def truncatechars_content(content):
     """
-    获得文章内容的摘要
+    获得资源内容的摘要
     :param content:
     :return:
     """
     from django.template.defaultfilters import truncatechars_html
-    from djangoblog.utils import get_blog_setting
+    from teachingplatform.utils import get_blog_setting
     blogsetting = get_blog_setting()
     return truncatechars_html(content, blogsetting.article_sub_length)
 
@@ -210,12 +210,12 @@ def truncate(content):
 @register.inclusion_tag('blog/tags/breadcrumb.html')
 def load_breadcrumb(article):
     """
-    获得文章面包屑
+    获得教学资源面包屑
     :param article:
     :return:
     """
     names = article.get_category_tree()
-    from djangoblog.utils import get_blog_setting
+    from teachingplatform.utils import get_blog_setting
     blogsetting = get_blog_setting()
     site = get_current_site().domain
     names.append((blogsetting.site_name, '/'))
@@ -231,7 +231,7 @@ def load_breadcrumb(article):
 @register.inclusion_tag('blog/tags/article_tag_list.html')
 def load_articletags(article):
     """
-    文章标签
+    资源标签
     :param article:
     :return:
     """
@@ -260,7 +260,7 @@ def load_sidebar(user, linktype):
         return value
     else:
         logger.info('load sidebar')
-        from djangoblog.utils import get_blog_setting
+        from teachingplatform.utils import get_blog_setting
         blogsetting = get_blog_setting()
 
         # 优化：添加select_related/prefetch_related减少查询
@@ -289,7 +289,7 @@ def load_sidebar(user, linktype):
         commment_list = Comment.objects.filter(
             is_enable=True
         ).select_related('author').order_by('-id')[:blogsetting.sidebar_comment_count]
-        # 标签云 — 按文章数排序，取 top 20，size = (count/avg)*5+10
+        # 标签云 — 按教学资源数排序，取 top 20，size = (count/avg)*5+10
         increment = 5
         tags = Tag.objects.all()
         sidebar_tags = None
@@ -326,7 +326,7 @@ def load_sidebar(user, linktype):
 @register.inclusion_tag('blog/tags/article_meta_info.html')
 def load_article_metas(article, user):
     """
-    获得文章meta信息
+    获得教学资源meta信息
     :param article:
     :return:
     """
@@ -343,22 +343,22 @@ def load_pagination_info(page_obj, page_type, tag_name):
 
     # Pre-resolve slug for tag/category to avoid repeated DB queries
     _slug = None
-    if page_type == '分类标签归档':
+    if page_type == '标签归档':
         _slug = get_object_or_404(Tag, name=tag_name).slug
-    elif page_type == '分类目录归档':
+    elif page_type == '课程分类归档':
         _slug = get_object_or_404(Category, name=tag_name).slug
 
     def _build_url(page_number):
         """Build URL for a given page number based on page_type."""
         if page_type == '':
             return reverse('blog:index_page', kwargs={'page': page_number})
-        elif page_type == '分类标签归档':
+        elif page_type == '标签归档':
             return reverse('blog:tag_detail_page',
                            kwargs={'page': page_number, 'tag_name': _slug})
-        elif page_type == '作者文章归档':
+        elif page_type == '作者教学资源归档':
             return reverse('blog:author_detail_page',
                            kwargs={'page': page_number, 'author_name': tag_name})
-        elif page_type == '分类目录归档':
+        elif page_type == '课程分类归档':
             return reverse('blog:category_detail_page',
                            kwargs={'page': page_number, 'category_name': _slug})
         return ''
@@ -409,13 +409,13 @@ def load_pagination_info(page_obj, page_type, tag_name):
 @register.inclusion_tag('blog/tags/article_info.html')
 def load_article_detail(article, isindex, user, query=None):
     """
-    加载文章详情
+    加载资源详情
     :param article:
     :param isindex:是否列表页，若是列表页只显示摘要
     :param query: 搜索查询词（用于高亮）
     :return:
     """
-    from djangoblog.utils import get_blog_setting
+    from teachingplatform.utils import get_blog_setting
     blogsetting = get_blog_setting()
 
     return {
@@ -430,14 +430,14 @@ def load_article_detail(article, isindex, user, query=None):
 @register.inclusion_tag('blog/tags/article_info_highlight.html')
 def load_article_detail_with_highlight(article, highlighted, isindex, user):
     """
-    加载文章详情（带搜索高亮）
-    :param article: 文章对象
+    加载资源详情（带搜索高亮）
+    :param article: 教学资源对象
     :param highlighted: 高亮数据字典 {'title': [...], 'body': [...]}
     :param isindex: 是否列表页，若是列表页只显示摘要
     :param user: 当前用户
     :return:
     """
-    from djangoblog.utils import get_blog_setting
+    from teachingplatform.utils import get_blog_setting
     blogsetting = get_blog_setting()
 
     return {
@@ -593,7 +593,7 @@ def render_plugin_widgets(context, position, **kwargs):
     Returns:
         按优先级排序的所有插件HTML内容
     """
-    from djangoblog.plugin_manage.loader import get_loaded_plugins
+    from teachingplatform.plugin_manage.loader import get_loaded_plugins
     
     widgets = []
     
@@ -625,7 +625,7 @@ def plugin_critical_head_resources(context):
     用于防闪烁脚本等必须在页面渲染前执行的关键代码。
     这些资源会在<head>标签的最开始位置加载，在所有CSS之前。
     """
-    from djangoblog.plugin_manage.loader import get_loaded_plugins
+    from teachingplatform.plugin_manage.loader import get_loaded_plugins
 
     resources = []
 
@@ -644,7 +644,7 @@ def plugin_critical_head_resources(context):
 @register.simple_tag(takes_context=True)
 def plugin_head_resources(context):
     """渲染所有插件的head资源（仅自定义HTML，CSS已集成到压缩系统）"""
-    from djangoblog.plugin_manage.loader import get_loaded_plugins
+    from teachingplatform.plugin_manage.loader import get_loaded_plugins
 
     resources = []
 
@@ -664,7 +664,7 @@ def plugin_head_resources(context):
 @register.simple_tag(takes_context=True)
 def plugin_body_resources(context):
     """渲染所有插件的body资源（仅自定义HTML，JS已集成到压缩系统）"""
-    from djangoblog.plugin_manage.loader import get_loaded_plugins
+    from teachingplatform.plugin_manage.loader import get_loaded_plugins
     
     resources = []
     
@@ -684,7 +684,7 @@ def plugin_body_resources(context):
 @register.inclusion_tag('plugins/css_includes.html')
 def plugin_compressed_css():
     """插件CSS压缩包含模板"""
-    from djangoblog.plugin_manage.loader import get_loaded_plugins
+    from teachingplatform.plugin_manage.loader import get_loaded_plugins
     
     css_files = []
     for plugin in get_loaded_plugins():
@@ -698,7 +698,7 @@ def plugin_compressed_css():
 @register.inclusion_tag('plugins/js_includes.html')
 def plugin_compressed_js():
     """插件JS压缩包含模板"""
-    from djangoblog.plugin_manage.loader import get_loaded_plugins
+    from teachingplatform.plugin_manage.loader import get_loaded_plugins
     
     js_files = []
     for plugin in get_loaded_plugins():
@@ -719,7 +719,7 @@ def plugin_widget(context, plugin_name, widget_type='default', **kwargs):
     使用方式：
     {% plugin_widget 'article_recommendation' 'bottom' article=article count=5 %}
     """
-    from djangoblog.plugin_manage.loader import get_plugin_by_slug
+    from teachingplatform.plugin_manage.loader import get_plugin_by_slug
     
     plugin = get_plugin_by_slug(plugin_name)
     if plugin and hasattr(plugin, 'render_template'):

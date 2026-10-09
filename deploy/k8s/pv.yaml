@@ -24,7 +24,7 @@ spec:
 apiVersion: v1
 kind: PersistentVolume
 metadata:
-  name: local-pv-djangoblog
+  name: local-pv-teachingplatform
 spec:
   capacity:
     storage: 5Gi
@@ -34,7 +34,7 @@ spec:
   persistentVolumeReclaimPolicy: Retain
   storageClassName: local-storage
   local:
-    path: /mnt/local-storage-djangoblog
+    path: /mnt/local-storage-teachingplatform
   nodeAffinity:
     required:
       nodeSelectorTerms:

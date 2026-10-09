@@ -1,13 +1,13 @@
 apiVersion: v1
 kind: Service
 metadata:
-  name: djangoblog
-  namespace: djangoblog
+  name: teachingplatform
+  namespace: teachingplatform
   labels:
-    app: djangoblog
+    app: teachingplatform
 spec:
   selector:
-    app: djangoblog
+    app: teachingplatform
   ports:
     - protocol: TCP
       port: 8000
@@ -18,7 +18,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: nginx
-  namespace: djangoblog
+  namespace: teachingplatform
   labels:
     app: nginx
 spec:
@@ -34,7 +34,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: redis
-  namespace: djangoblog
+  namespace: teachingplatform
   labels:
     app: redis
 spec:
@@ -50,7 +50,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: db
-  namespace: djangoblog
+  namespace: teachingplatform
   labels:
     app: db
 spec:
@@ -66,7 +66,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: elasticsearch
-  namespace: djangoblog
+  namespace: teachingplatform
   labels:
     app: elasticsearch
 spec:

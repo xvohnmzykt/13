@@ -8,18 +8,18 @@ from django.test import RequestFactory
 
 from blog.models import Article
 from blog.templatetags.blog_tags import *
-from djangoblog.test_base import BaseTestCase
+from teachingplatform.test_base import BaseTestCase
 
 
 class BlogTagsTest(BaseTestCase):
-    """测试博客模板标签"""
+    """测试教学资源平台模板标签"""
 
     def setUp(self):
         super().setUp()
         self.factory = RequestFactory()
 
     def test_load_articletags(self):
-        """测试加载文章标签"""
+        """测试加载资源标签"""
         self.article.tags.add(self.tag)
         result = load_articletags(self.article)
         self.assertIsInstance(result, dict)
@@ -31,7 +31,7 @@ class BlogTagsTest(BaseTestCase):
     def test_load_pagination_info(self):
         """测试加载分页信息"""
         # 创建测试数据
-        articles = [self.create_article(title=f'文章{i}') for i in range(20)]
+        articles = [self.create_article(title=f'教学资源{i}') for i in range(20)]
         paginator = Paginator(articles, 10)
         page = paginator.get_page(1)
 
@@ -45,7 +45,7 @@ class BlogTagsTest(BaseTestCase):
 
     def test_load_pagination_info_last_page(self):
         """测试最后一页的分页信息"""
-        articles = [self.create_article(title=f'文章{i}') for i in range(15)]
+        articles = [self.create_article(title=f'教学资源{i}') for i in range(15)]
         paginator = Paginator(articles, 10)
         page = paginator.get_page(2)
 
@@ -88,12 +88,12 @@ class BlogTagsTest(BaseTestCase):
         self.assertIn('<strong>', result)
 
     def test_article_body_rendering(self):
-        """测试文章内容渲染"""
-        # 测试 Markdown 渲染，不需要创建文章
-        markdown_text = '# 标题\n这是文章内容'
+        """测试资源内容渲染"""
+        # 测试 Markdown 渲染，不需要创建教学资源
+        markdown_text = '# 标题\n这是资源内容'
         result = custom_markdown(markdown_text)
         self.assertIn('<h1', result)
-        self.assertIn('文章内容', result)
+        self.assertIn('资源内容', result)
 
 
 class ViteTagsTest(BaseTestCase):

@@ -1,5 +1,5 @@
 /**
- * DjangoBlog 前端主入口文件
+ * 在线教学资源平台 前端主入口文件
  * 使用 Alpine.js + HTMX 实现现代化服务端渲染
  */
 
@@ -107,4 +107,4 @@ document.body.addEventListener('htmx:afterRequest', () => {
   NProgress.done();
 });
 
-console.log('✨ DjangoBlog Frontend Loaded (Alpine.js + HTMX + Tailwind CSS)');
+console.log('✨ 在线教学资源平台 前端已加载 (Alpine.js + HTMX + Tailwind CSS)');

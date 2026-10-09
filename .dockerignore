@@ -2,7 +2,7 @@ bin/data/
 # virtualenv
 venv/
 collectedstatic/
-djangoblog/whoosh_index/
+teachingplatform/whoosh_index/
 uploads/
 settings_production.py
 *.md

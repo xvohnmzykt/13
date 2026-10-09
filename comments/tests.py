@@ -5,7 +5,7 @@ from accounts.models import BlogUser
 from blog.models import Category, Article
 from comments.models import Comment
 from comments.templatetags.comments_tags import *
-from djangoblog.utils import get_max_articleid_commentid
+from teachingplatform.utils import get_max_articleid_commentid
 
 
 # Create your tests here.
@@ -20,9 +20,9 @@ class CommentsTest(TransactionTestCase):
         value.save()
 
         self.user = BlogUser.objects.create_superuser(
-            email="liangliangyy1@gmail.com",
-            username="liangliangyy1",
-            password="liangliangyy1")
+            email="teacher1@gmail.com",
+            username="teacher1",
+            password="teacher1")
 
     def update_article_comment_status(self, article):
         comments = article.comment_set.all()
@@ -31,7 +31,7 @@ class CommentsTest(TransactionTestCase):
             comment.save()
 
     def test_validate_comment(self):
-        self.client.login(username='liangliangyy1', password='liangliangyy1')
+        self.client.login(username='teacher1', password='teacher1')
 
         category = Category()
         category.name = "categoryccc"
@@ -84,7 +84,7 @@ class CommentsTest(TransactionTestCase):
         import os
         ```
 
-        [url](https://www.lylinux.net/)
+        [url](https://teaching-platform.example.com/)
 
         [ddd](http://www.baidu.com)
 

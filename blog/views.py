@@ -17,10 +17,10 @@ from haystack.views import SearchView
 
 from blog.models import Article, Category, LinkShowType, Links, Tag
 from comments.forms import CommentForm
-from djangoblog.plugin_manage import hooks
-from djangoblog.plugin_manage.hook_constants import ARTICLE_CONTENT_HOOK_NAME
-from djangoblog.utils import cache, get_blog_setting, get_sha256
-from djangoblog.mixins import (
+from teachingplatform.plugin_manage import hooks
+from teachingplatform.plugin_manage.hook_constants import ARTICLE_CONTENT_HOOK_NAME
+from teachingplatform.utils import cache, get_blog_setting, get_sha256
+from teachingplatform.mixins import (
     SlugCachedMixin,
     ArticleListMixin,
     OptimizedArticleQueryMixin,
@@ -33,7 +33,7 @@ logger = logging.getLogger(__name__)
 
 class ArticleListView(CachedListViewMixin, PageNumberMixin, ListView):
     """
-    文章列表视图基类（重构版）
+    资源列表视图基类（重构版）
 
     使用 Mixin 简化代码，消除重复逻辑
     子类只需实现 get_queryset_data() 和 get_queryset_cache_key() 方法
@@ -88,7 +88,7 @@ class IndexView(OptimizedArticleQueryMixin, ArticleListView):
 
 class ArticleDetailView(DetailView):
     '''
-    文章详情页面
+    资源详情页面
     '''
     template_name = 'blog/article_detail.html'
     model = Article
@@ -149,7 +149,7 @@ class ArticleDetailView(DetailView):
         blog_setting = get_blog_setting()
         from django.utils.html import strip_tags
         from django.utils.text import Truncator
-        from djangoblog.utils import CommonMarkdown
+        from teachingplatform.utils import CommonMarkdown
         
         # 处理description：markdown -> HTML -> 纯文本，彻底去除格式
         html_content = CommonMarkdown.get_markdown(article.body)
@@ -165,11 +165,11 @@ class ArticleDetailView(DetailView):
         context['seo_description'] = description
         context['seo_keywords'] = keywords
         
-        # 触发文章详情加载钩子，让插件可以添加额外的上下文数据
-        from djangoblog.plugin_manage.hook_constants import ARTICLE_DETAIL_LOAD
+        # 触发资源详情加载钩子，让插件可以添加额外的上下文数据
+        from teachingplatform.plugin_manage.hook_constants import ARTICLE_DETAIL_LOAD
         hooks.run_action(ARTICLE_DETAIL_LOAD, article=article, context=context, request=self.request)
         
-        # Action Hook, 通知插件"文章详情已获取"
+        # Action Hook, 通知插件"资源详情已获取"
         hooks.run_action('after_article_body_get', article=article, request=self.request)
         return context
 
@@ -179,9 +179,9 @@ class CategoryDetailView(SlugCachedMixin, OptimizedArticleQueryMixin, ArticleLis
     分类目录列表（重构版）
 
     使用 SlugCachedMixin 避免重复查询 Category
-    使用 OptimizedArticleQueryMixin 优化文章查询
+    使用 OptimizedArticleQueryMixin 优化教学资源查询
     """
-    page_type = "分类目录归档"
+    page_type = "课程分类归档"
     slug_url_kwarg = 'category_name'
     slug_model = Category
 
@@ -215,7 +215,7 @@ class CategoryDetailView(SlugCachedMixin, OptimizedArticleQueryMixin, ArticleLis
         blog_setting = get_blog_setting()
         article_count = self.get_queryset().count()
         kwargs['seo_title'] = f"{categoryname} | {blog_setting.site_name}"
-        kwargs['seo_description'] = f"浏览 {categoryname} 分类下的所有文章，共 {article_count} 篇文章。"
+        kwargs['seo_description'] = f"浏览 {categoryname} 分类下的所有教学资源，共 {article_count} 篇教学资源。"
         kwargs['seo_keywords'] = f"{categoryname}, {blog_setting.site_keywords}"
         
         return super(CategoryDetailView, self).get_context_data(**kwargs)
@@ -225,9 +225,9 @@ class AuthorDetailView(OptimizedArticleQueryMixin, ArticleListView):
     """
     作者详情页（重构版）
 
-    使用 OptimizedArticleQueryMixin 优化文章查询
+    使用 OptimizedArticleQueryMixin 优化教学资源查询
     """
-    page_type = '作者文章归档'
+    page_type = '作者教学资源归档'
 
     def get_queryset_cache_key(self):
         from uuslug import slugify
@@ -248,8 +248,8 @@ class AuthorDetailView(OptimizedArticleQueryMixin, ArticleListView):
         # 添加基础SEO数据
         blog_setting = get_blog_setting()
         article_count = self.get_queryset().count()
-        kwargs['seo_title'] = f"{author_name} 的文章 | {blog_setting.site_name}"
-        kwargs['seo_description'] = f"浏览 {author_name} 发表的所有文章，共 {article_count} 篇。"
+        kwargs['seo_title'] = f"{author_name} 的教学资源 | {blog_setting.site_name}"
+        kwargs['seo_description'] = f"浏览 {author_name} 发表的所有教学资源，共 {article_count} 篇。"
         kwargs['seo_keywords'] = f"{author_name}, {blog_setting.site_keywords}"
         
         return super(AuthorDetailView, self).get_context_data(**kwargs)
@@ -260,9 +260,9 @@ class TagDetailView(SlugCachedMixin, OptimizedArticleQueryMixin, ArticleListView
     标签列表页面（重构版）
 
     使用 SlugCachedMixin 避免重复查询 Tag
-    使用 OptimizedArticleQueryMixin 优化文章查询
+    使用 OptimizedArticleQueryMixin 优化教学资源查询
     """
-    page_type = '分类标签归档'
+    page_type = '标签归档'
     slug_url_kwarg = 'tag_name'
     slug_model = Tag
 
@@ -287,7 +287,7 @@ class TagDetailView(SlugCachedMixin, OptimizedArticleQueryMixin, ArticleListView
         blog_setting = get_blog_setting()
         article_count = self.get_queryset().count()
         kwargs['seo_title'] = f"{tag.name} | {blog_setting.site_name}"
-        kwargs['seo_description'] = f"浏览所有关于 {tag.name} 的文章，共 {article_count} 篇内容。"
+        kwargs['seo_description'] = f"浏览所有关于 {tag.name} 的教学资源，共 {article_count} 篇内容。"
         kwargs['seo_keywords'] = f"{tag.name}, {blog_setting.site_keywords}"
         
         return super(TagDetailView, self).get_context_data(**kwargs)
@@ -295,11 +295,11 @@ class TagDetailView(SlugCachedMixin, OptimizedArticleQueryMixin, ArticleListView
 
 class ArchivesView(OptimizedArticleQueryMixin, ArticleListView):
     """
-    文章归档页面（重构版）
+    教学资源归档页面（重构版）
 
-    使用 OptimizedArticleQueryMixin 优化文章查询
+    使用 OptimizedArticleQueryMixin 优化教学资源查询
     """
-    page_type = '文章归档'
+    page_type = '教学资源归档'
     paginate_by = None
     page_kwarg = None
     template_name = 'blog/article_archives.html'
@@ -393,10 +393,10 @@ def fileupload(request):
 
 # ===== 错误处理视图 =====
 # 注意：这些函数保留是为了向后兼容
-# 实际实现已经移动到 djangoblog.error_views
+# 实际实现已经移动到 teachingplatform.error_views
 # 可以在 urls.py 中直接引用新的实现
 
-from djangoblog.error_views import (
+from teachingplatform.error_views import (
     page_not_found_view,
     server_error_view,
     permission_denied_view

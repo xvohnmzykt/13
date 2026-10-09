@@ -1,21 +1,21 @@
 import re
 from urllib.parse import urlparse
-from djangoblog.plugin_manage.base_plugin import BasePlugin
-from djangoblog.plugin_manage import hooks
-from djangoblog.plugin_manage.hook_constants import ARTICLE_CONTENT_HOOK_NAME
+from teachingplatform.plugin_manage.base_plugin import BasePlugin
+from teachingplatform.plugin_manage import hooks
+from teachingplatform.plugin_manage.hook_constants import ARTICLE_CONTENT_HOOK_NAME
 
 
 class ExternalLinksPlugin(BasePlugin):
     PLUGIN_NAME = '外部链接处理器'
-    PLUGIN_DESCRIPTION = '自动为文章中的外部链接添加 target="_blank" 和 rel="noopener noreferrer" 属性。'
+    PLUGIN_DESCRIPTION = '自动为教学资源中的外部链接添加 target="_blank" 和 rel="noopener noreferrer" 属性。'
     PLUGIN_VERSION = '0.1.0'
-    PLUGIN_AUTHOR = 'liangliangyy'
+    PLUGIN_AUTHOR = '在线教学资源平台'
 
     def register_hooks(self):
         hooks.register(ARTICLE_CONTENT_HOOK_NAME, self.process_external_links)
 
     def process_external_links(self, content, *args, **kwargs):
-        from djangoblog.utils import get_current_site
+        from teachingplatform.utils import get_current_site
         site_domain = get_current_site().domain
 
         # 正则表达式查找所有 <a> 标签

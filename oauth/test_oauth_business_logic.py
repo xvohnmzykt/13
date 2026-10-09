@@ -128,7 +128,7 @@ class OAuthUserTest(TestCase):
         self.assertEqual(oauth_user.openid, 'test_openid_123')
 
     def test_oauth_user_links_to_blog_user(self):
-        """测试OAuth用户关联到博客用户"""
+        """测试OAuth用户关联到平台用户"""
         oauth_user = OAuthUser.objects.create(
             author=self.blog_user,
             openid='openid_456',
@@ -139,7 +139,7 @@ class OAuthUserTest(TestCase):
 
         self.assertEqual(oauth_user.author, self.blog_user)
 
-        # 验证可以从博客用户查询OAuth用户
+        # 验证可以从平台用户查询OAuth用户
         oauth_users = OAuthUser.objects.filter(author=self.blog_user)
         self.assertIn(oauth_user, oauth_users)
 
@@ -254,7 +254,7 @@ class OAuthUserQueryTest(TestCase):
         self.assertIn(github_user, github_users)
 
     def test_query_oauth_users_by_blog_user(self):
-        """测试按博客用户查询OAuth用户"""
+        """测试按平台用户查询OAuth用户"""
         # 为user1创建多个OAuth关联
         weibo = OAuthUser.objects.create(
             author=self.user1,
@@ -320,7 +320,7 @@ class OAuthUserBindingTest(TestCase):
         # 验证绑定关系
         self.assertEqual(oauth_user.author, self.blog_user)
 
-        # 验证可以通过博客用户找到OAuth用户
+        # 验证可以通过平台用户找到OAuth用户
         oauth_accounts = OAuthUser.objects.filter(author=self.blog_user)
         self.assertIn(oauth_user, oauth_accounts)
 
@@ -343,7 +343,7 @@ class OAuthUserBindingTest(TestCase):
         with self.assertRaises(OAuthUser.DoesNotExist):
             OAuthUser.objects.get(id=oauth_id)
 
-        # 博客用户应该仍然存在
+        # 平台用户应该仍然存在
         self.assertTrue(BlogUser.objects.filter(id=self.blog_user.id).exists())
 
     def test_change_oauth_binding(self):
@@ -446,7 +446,7 @@ class OAuthUserDeletionTest(TestCase):
             OAuthUser.objects.get(id=oauth_id)
 
     def test_delete_blog_user_cascade_oauth(self):
-        """测试删除博客用户级联删除OAuth用户"""
+        """测试删除平台用户级联删除OAuth用户"""
         oauth_user = OAuthUser.objects.create(
             author=self.blog_user,
             openid='openid',
@@ -457,7 +457,7 @@ class OAuthUserDeletionTest(TestCase):
 
         oauth_id = oauth_user.id
 
-        # 删除博客用户
+        # 删除平台用户
         self.blog_user.delete()
 
         # 验证OAuth用户也被删除（取决于外键的on_delete设置）

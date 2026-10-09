@@ -1,29 +1,29 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: djangoblog
-  namespace: djangoblog
+  name: teachingplatform
+  namespace: teachingplatform
   labels:
-    app: djangoblog
+    app: teachingplatform
 spec:
   replicas: 3
   selector:
     matchLabels:
-      app: djangoblog
+      app: teachingplatform
   template:
     metadata:
       labels:
-        app: djangoblog
+        app: teachingplatform
     spec:
       containers:
-      - name: djangoblog
-        image: liangliangyy/djangoblog:latest
+      - name: teachingplatform
+        image: teachingplatform:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 8000
         envFrom:
         - configMapRef:
-            name: djangoblog-env
+            name: teachingplatform-env
         readinessProbe:
           httpGet:
             path: /health/
@@ -44,14 +44,14 @@ spec:
             cpu: "2"
             memory: 2Gi
         volumeMounts:
-        - name: djangoblog
-          mountPath: /code/djangoblog/collectedstatic
+        - name: teachingplatform
+          mountPath: /code/teachingplatform/collectedstatic
         - name: resource
           mountPath: /resource
       volumes:
-      - name: djangoblog
+      - name: teachingplatform
         persistentVolumeClaim:
-          claimName: djangoblog-pvc
+          claimName: teachingplatform-pvc
       - name: resource
         persistentVolumeClaim:
           claimName: resource-pvc
@@ -61,7 +61,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: redis
-  namespace: djangoblog
+  namespace: teachingplatform
   labels:
     app: redis
 spec:
@@ -93,7 +93,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: db
-  namespace: djangoblog
+  namespace: teachingplatform
   labels:
     app: db
 spec:
@@ -114,7 +114,7 @@ spec:
         - containerPort: 3306
         envFrom:
         - configMapRef:
-            name: djangoblog-env
+            name: teachingplatform-env
         readinessProbe:
           exec:
             command:
@@ -159,7 +159,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: nginx
-  namespace: djangoblog
+  namespace: teachingplatform
   labels:
     app: nginx
 spec:
@@ -191,24 +191,24 @@ spec:
           subPath: nginx.conf
         - name: nginx-config
           mountPath: /etc/nginx/conf.d/default.conf
-          subPath: djangoblog.conf
+          subPath: teachingplatform.conf
         - name: nginx-config
-          mountPath: /etc/nginx/conf.d/resource.lylinux.net.conf
-          subPath: resource.lylinux.net.conf
+          mountPath: /etc/nginx/conf.d/teaching-platform.example.com.conf
+          subPath: teaching-platform.example.com.conf
         - name: nginx-config
-          mountPath: /etc/nginx/lylinux/resource.conf
-          subPath: lylinux.resource.conf
-        - name: djangoblog-pvc
-          mountPath: /code/djangoblog/collectedstatic
+          mountPath: /etc/nginx/teachingplatform/resource.conf
+          subPath: teachingplatform.resource.conf
+        - name: teachingplatform-pvc
+          mountPath: /code/teachingplatform/collectedstatic
         - name: resource-pvc
           mountPath: /resource
       volumes:
       - name: nginx-config
         configMap:
           name: web-nginx-config
-      - name: djangoblog-pvc
+      - name: teachingplatform-pvc
         persistentVolumeClaim:
-          claimName: djangoblog-pvc
+          claimName: teachingplatform-pvc
       - name: resource-pvc
         persistentVolumeClaim:
           claimName: resource-pvc
@@ -218,7 +218,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: elasticsearch
-  namespace: djangoblog
+  namespace: teachingplatform
   labels:
     app: elasticsearch
 spec:
@@ -233,7 +233,7 @@ spec:
     spec:
       containers:
       - name: elasticsearch
-        image: liangliangyy/elasticsearch-analysis-ik:8.6.1
+        image: elasticsearch-analysis-ik:8.6.1
         imagePullPolicy: IfNotPresent
         env:
         - name: discovery.type

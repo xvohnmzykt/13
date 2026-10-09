@@ -2,7 +2,7 @@ import requests
 from django.core.management.base import BaseCommand
 from django.templatetags.static import static
 
-from djangoblog.utils import save_user_avatar
+from teachingplatform.utils import save_user_avatar
 from oauth.models import OAuthUser
 from oauth.oauthmanager import get_manager_by_type
 

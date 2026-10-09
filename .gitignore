@@ -58,15 +58,26 @@ docs/_build/
 target/
 
 
-# PyCharm
-# http://www.jetbrains.com/pycharm/webhelp/project.html
+# IDE
 .idea
 .iml
 # virtualenv
 venv/
+.venv/
+
+# 本地 Python 运行时（随项目部署的嵌入式解释器）
+.python312/
+
+# 环境安装临时目录
+.setup/
+
+# 本地敏感配置（数据库密码等），仓库中只保留 .env.example
+.env
+.env.local
+.env.*.local
 
 collectedstatic/
-djangoblog/whoosh_index/
+teachingplatform/whoosh_index/
 whoosh_index/
 google93fd32dbd906620a.html
 baidu_verify_FlHL7cUyC9.html

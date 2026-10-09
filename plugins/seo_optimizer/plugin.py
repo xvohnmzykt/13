@@ -1,15 +1,15 @@
 import json
 from django.utils.html import strip_tags
 from django.template.defaultfilters import truncatewords
-from djangoblog.plugin_manage.base_plugin import BasePlugin
-from djangoblog.plugin_manage import hooks
+from teachingplatform.plugin_manage.base_plugin import BasePlugin
+from teachingplatform.plugin_manage import hooks
 from blog.models import Article, Category, Tag
-from djangoblog.utils import get_blog_setting
+from teachingplatform.utils import get_blog_setting
 
 
 class SeoOptimizerPlugin(BasePlugin):
     PLUGIN_NAME = 'SEO 优化器'
-    PLUGIN_DESCRIPTION = '为文章、页面等提供高级 SEO 优化，动态生成增强的 Open Graph 标签和 JSON-LD 结构化数据。基础 SEO（title、description、keywords）由视图层提供。'
+    PLUGIN_DESCRIPTION = '为教学资源、页面等提供高级 SEO 优化，动态生成增强的 Open Graph 标签和 JSON-LD 结构化数据。基础 SEO（title、description、keywords）由视图层提供。'
     PLUGIN_VERSION = '0.3.0'
     PLUGIN_AUTHOR = 'liuangliangyy'
 
@@ -23,7 +23,7 @@ class SeoOptimizerPlugin(BasePlugin):
 
         from django.utils.html import escape
         from django.utils.text import Truncator
-        from djangoblog.utils import CommonMarkdown
+        from teachingplatform.utils import CommonMarkdown
         
         # 处理description：markdown -> HTML -> 纯文本，彻底去除格式
         html_content = CommonMarkdown.get_markdown(article.body)

@@ -1,5 +1,5 @@
 """
-Cloudflare Cache Plugin for DjangoBlog
+Cloudflare Cache Plugin for 在线教学资源平台
 
 Automatically purges Cloudflare cache when content changes.
 """

@@ -9,7 +9,7 @@ from django.utils import timezone
 from accounts.models import BlogUser
 from blog.context_processors import seo_processor
 from blog.models import Category, Article
-from djangoblog.utils import cache
+from teachingplatform.utils import cache
 
 
 class SeoProcessorTest(TestCase):
@@ -203,8 +203,8 @@ class SeoProcessorTest(TestCase):
 
     @patch('blog.context_processors.get_blog_setting')
     def test_processor_with_custom_blog_settings(self, mock_get_blog_setting):
-        """测试使用自定义博客设置"""
-        # 模拟博客设置
+        """测试使用自定义平台设置"""
+        # 模拟平台设置
         mock_setting = Mock()
         mock_setting.site_name = 'Test Blog'
         mock_setting.site_description = 'A test blog'
@@ -341,13 +341,13 @@ class SeoProcessorTest(TestCase):
         self.assertEqual(len(nav_pages), 3)
 
     def test_processor_excludes_articles_from_nav_pages(self):
-        """测试nav_pages不包含文章（只包含页面）"""
-        # 创建一个文章
+        """测试nav_pages不包含教学资源（只包含页面）"""
+        # 创建一个教学资源
         Article.objects.create(
             title='Test Article',
             body='Article content',
             author=self.user,
-            type='a',  # 文章类型
+            type='a',  # 教学资源类型
             status='p',
             category=self.category
         )
@@ -358,7 +358,7 @@ class SeoProcessorTest(TestCase):
         request = self.factory.get('/')
         result = seo_processor(request)
 
-        # 验证文章不在nav_pages中
+        # 验证教学资源不在nav_pages中
         nav_pages = list(result['nav_pages'])
         page_titles = [page.title for page in nav_pages]
         self.assertNotIn('Test Article', page_titles)

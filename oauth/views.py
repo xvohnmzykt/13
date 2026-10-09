@@ -17,9 +17,9 @@ from django.utils.translation import gettext_lazy as _
 from django.views.generic import FormView
 from django.utils.http import url_has_allowed_host_and_scheme
 
-from djangoblog.blog_signals import oauth_user_login_signal
-from djangoblog.utils import get_current_site
-from djangoblog.utils import send_email, get_sha256
+from teachingplatform.blog_signals import oauth_user_login_signal
+from teachingplatform.utils import get_current_site
+from teachingplatform.utils import send_email, get_sha256
 from oauth.forms import RequireEmailForm
 from .models import OAuthUser
 from .oauthmanager import get_manager_by_type, OAuthAccessTokenException
@@ -79,7 +79,7 @@ def authorize(request):
     user = manager.get_oauth_userinfo()
     if user:
         if not user.nickname or not user.nickname.strip():
-            user.nickname = "djangoblog" + timezone.now().strftime('%y%m%d%I%M%S')
+            user.nickname = "teachingplatform" + timezone.now().strftime('%y%m%d%I%M%S')
         try:
             temp = OAuthUser.objects.get(type=type, openid=user.openid)
             temp.picture = user.picture
@@ -107,7 +107,7 @@ def authorize(request):
                         except ObjectDoesNotExist:
                             author.username = user.nickname
                         else:
-                            author.username = "djangoblog" + timezone.now().strftime('%y%m%d%I%M%S')
+                            author.username = "teachingplatform" + timezone.now().strftime('%y%m%d%I%M%S')
                         author.source = 'authorize'
                         author.save()
 
@@ -157,7 +157,7 @@ def emailconfirm(request, id, sign):
             if result[1]:
                 author.source = 'emailconfirm'
                 author.username = oauthuser.nickname.strip() if oauthuser.nickname.strip(
-                ) else "djangoblog" + timezone.now().strftime('%y%m%d%I%M%S')
+                ) else "teachingplatform" + timezone.now().strftime('%y%m%d%I%M%S')
                 author.save()
         oauthuser.author = author
         oauthuser.save()

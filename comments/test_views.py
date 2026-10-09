@@ -6,7 +6,7 @@ from django.test import TransactionTestCase
 from django.urls import reverse
 
 from comments.models import Comment
-from djangoblog.test_base import BaseTestCase, ViewTestMixin
+from teachingplatform.test_base import BaseTestCase, ViewTestMixin
 
 
 class CommentViewTest(TransactionTestCase, ViewTestMixin):
@@ -30,7 +30,7 @@ class CommentViewTest(TransactionTestCase, ViewTestMixin):
             last_modify_time=timezone.now()
         )
         self.article = Article.objects.create(
-            title='测试文章',
+            title='测试教学资源',
             body='测试内容',
             author=self.user,
             category=self.category,
@@ -40,7 +40,7 @@ class CommentViewTest(TransactionTestCase, ViewTestMixin):
         self.blog_settings, _ = BlogSettings.objects.get_or_create(
             id=1,
             defaults={
-                'site_name': '测试博客',
+                'site_name': '测试教学资源平台',
                 'site_description': '测试描述',
                 'comment_need_review': False,
             }
@@ -79,7 +79,7 @@ class CommentViewTest(TransactionTestCase, ViewTestMixin):
         self.assertIn(response.status_code, [200, 302])
 
     def test_post_comment_invalid_article(self):
-        """测试对不存在的文章评论"""
+        """测试对不存在的资源评论"""
         self.login_user()
         url = reverse('comments:postcomment', kwargs={'article_id': 99999})
         response = self.client.post(url, {'body': '评论'})
@@ -121,7 +121,7 @@ class CommentViewTest(TransactionTestCase, ViewTestMixin):
         self.assertFalse(comment.is_enable)
 
     def test_comment_display_on_article(self):
-        """测试评论在文章页显示"""
+        """测试评论在教学资源页显示"""
         comment = Comment.objects.create(
             body='测试显示评论',
             author=self.user,
@@ -166,7 +166,7 @@ class CommentSpamTest(TransactionTestCase, ViewTestMixin):
             last_modify_time=timezone.now()
         )
         self.article = Article.objects.create(
-            title='测试文章',
+            title='测试教学资源',
             body='测试内容',
             author=self.user,
             category=self.category,
@@ -229,7 +229,7 @@ class CommentSecurityTest(TransactionTestCase, ViewTestMixin):
             last_modify_time=timezone.now()
         )
         self.article = Article.objects.create(
-            title='测试文章',
+            title='测试教学资源',
             body='测试内容',
             author=self.user,
             category=self.category,

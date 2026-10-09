@@ -2,7 +2,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: db-pvc
-  namespace: djangoblog
+  namespace: teachingplatform
 spec:
   storageClassName: local-storage
   volumeName: local-pv-db
@@ -17,10 +17,10 @@ spec:
 apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
-  name: djangoblog-pvc
-  namespace: djangoblog
+  name: teachingplatform-pvc
+  namespace: teachingplatform
 spec:
-  volumeName: local-pv-djangoblog
+  volumeName: local-pv-teachingplatform
   storageClassName: local-storage
   accessModes:
     - ReadWriteOnce
@@ -33,7 +33,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: resource-pvc
-  namespace: djangoblog
+  namespace: teachingplatform
 spec:
   volumeName: local-pv-resource
   storageClassName: local-storage
@@ -48,7 +48,7 @@ apiVersion: v1
 kind: PersistentVolumeClaim
 metadata:
   name: elasticsearch-pvc
-  namespace: djangoblog
+  namespace: teachingplatform
 spec:
   volumeName: local-pv-elasticsearch
   storageClassName: local-storage

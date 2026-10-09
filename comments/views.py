@@ -6,7 +6,7 @@ from django.views import View
 
 from accounts.models import BlogUser
 from blog.models import Article
-from djangoblog.base_views import AuthenticatedFormView
+from teachingplatform.base_views import AuthenticatedFormView
 from .forms import CommentForm
 from .models import Comment, CommentReaction
 
@@ -45,10 +45,10 @@ class CommentPostView(AuthenticatedFormView):
         article = get_object_or_404(Article, pk=article_id)
 
         if article.comment_status == 'c' or article.status == 'c':
-            raise ValidationError("该文章评论已关闭.")
+            raise ValidationError("该资源评论已关闭.")
         comment = form.save(False)
         comment.article = article
-        from djangoblog.utils import get_blog_setting
+        from teachingplatform.utils import get_blog_setting
         settings = get_blog_setting()
         if not settings.comment_need_review:
             comment.is_enable = True

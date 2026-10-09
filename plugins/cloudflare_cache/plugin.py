@@ -4,14 +4,14 @@ Cloudflare 缓存管理插件
 自动清除Cloudflare CDN缓存，确保内容更新后用户能看到最新内容。
 
 功能特性：
-- 文章发布/修改时自动清除相关页面缓存
-- 评论发布时清除文章页面缓存
+- 教学资源发布/修改时自动清除相关页面缓存
+- 评论发布时清除资源详情页缓存
 - 智能过滤浏览量更新，避免频繁清除缓存
 - 支持批量清除，自动处理Cloudflare的30个URL限制
 - 完整的错误处理，缓存清除失败不影响主流程
 - 灵活的配置选项，可按需启用/禁用功能
 
-作者: DjangoBlog
+作者: 在线教学资源平台
 版本: 1.0.0
 """
 
@@ -20,7 +20,7 @@ import logging
 from django.conf import settings
 from django.db.models.signals import post_save
 
-from djangoblog.plugin_manage.base_plugin import BasePlugin
+from teachingplatform.plugin_manage.base_plugin import BasePlugin
 
 logger = logging.getLogger(__name__)
 
@@ -30,9 +30,9 @@ class CloudflareCachePlugin(BasePlugin):
 
     # ==================== 插件元数据 ====================
     PLUGIN_NAME = 'Cloudflare 缓存管理'
-    PLUGIN_DESCRIPTION = '自动清除Cloudflare缓存，在文章、评论更新时保持内容同步'
+    PLUGIN_DESCRIPTION = '自动清除Cloudflare缓存，在教学资源、评论更新时保持内容同步'
     PLUGIN_VERSION = '1.0.0'
-    PLUGIN_AUTHOR = 'DjangoBlog'
+    PLUGIN_AUTHOR = '在线教学资源平台'
 
     # ==================== 位置配置 ====================
     # 此插件不需要在页面上显示任何内容，只在后台工作
@@ -49,11 +49,11 @@ class CloudflareCachePlugin(BasePlugin):
 
         # === 清除策略 ===
         'purge_on_startup': os.environ.get('CLOUDFLARE_PURGE_ON_STARTUP', 'false').lower() in ('true', '1', 'yes'),  # 应用启动时清除全站缓存
-        'purge_on_article_save': True,   # 文章保存时清除缓存
+        'purge_on_article_save': True,   # 教学资源保存时清除缓存
         'purge_on_comment_save': True,   # 评论保存时清除缓存
 
         # === 清除范围 ===
-        'purge_home_on_article': True,    # 文章更新时是否清除首页
+        'purge_home_on_article': True,    # 教学资源更新时是否清除首页
         'purge_related_pages': True,      # 是否清除分类页、标签页、RSS等相关页面
         'purge_home_on_comment': True,   # 评论更新时是否清除首页（如果首页显示最新评论则开启）
 

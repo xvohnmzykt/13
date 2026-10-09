@@ -7,12 +7,12 @@
     
     /**
      * 检测页面是否包含数学公式
-     * 只扫描文章正文区域，并排除 pre/code 代码块，
+     * 只扫描教学资源正文区域，并排除 pre/code 代码块，
      * 避免 $PATH、$(cmd) 等 Shell 变量触发误判
      * @returns {boolean} 是否包含数学公式
      */
     function hasMathFormulas() {
-        // 只检查文章正文，范围外不做处理
+        // 只检查教学资源正文，范围外不做处理
         var article = document.querySelector('.article.prose, .entry-content, #content');
         if (!article) return false;
 

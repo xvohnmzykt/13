@@ -22,11 +22,11 @@ class ServerManagerTest(TestCase):
 
     def test_validate_comment(self):
         user = BlogUser.objects.create_superuser(
-            email="liangliangyy1@gmail.com",
-            username="liangliangyy1",
-            password="liangliangyy1")
+            email="teacher1@gmail.com",
+            username="teacher1",
+            password="teacher1")
 
-        self.client.login(username='liangliangyy1', password='liangliangyy1')
+        self.client.login(username='teacher1', password='teacher1')
 
         c = Category()
         c.name = "categoryccc"
@@ -46,7 +46,7 @@ class ServerManagerTest(TestCase):
         rsp = category(None, None)
         self.assertIsNotNone(rsp)
         rsp = recents(None, None)
-        self.assertTrue(rsp != '暂时还没有文章')
+        self.assertTrue(rsp != '暂时还没有教学资源')
 
         cmd = commands()
         cmd.title = "test"

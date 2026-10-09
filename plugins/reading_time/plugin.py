@@ -1,15 +1,15 @@
 import math
 import re
-from djangoblog.plugin_manage.base_plugin import BasePlugin
-from djangoblog.plugin_manage import hooks
-from djangoblog.plugin_manage.hook_constants import ARTICLE_CONTENT_HOOK_NAME
+from teachingplatform.plugin_manage.base_plugin import BasePlugin
+from teachingplatform.plugin_manage import hooks
+from teachingplatform.plugin_manage.hook_constants import ARTICLE_CONTENT_HOOK_NAME
 
 
 class ReadingTimePlugin(BasePlugin):
     PLUGIN_NAME = '阅读时间预测'
-    PLUGIN_DESCRIPTION = '估算文章阅读时间并显示在文章开头。'
+    PLUGIN_DESCRIPTION = '估算教学资源阅读时间并显示在教学资源开头。'
     PLUGIN_VERSION = '0.1.0'
-    PLUGIN_AUTHOR = 'liangliangyy'
+    PLUGIN_AUTHOR = '在线教学资源平台'
 
     def register_hooks(self):
         hooks.register(ARTICLE_CONTENT_HOOK_NAME, self.add_reading_time)
@@ -17,9 +17,9 @@ class ReadingTimePlugin(BasePlugin):
     def add_reading_time(self, content, *args, **kwargs):
         """
         计算阅读时间并添加到内容开头。
-        只在文章详情页显示，首页（文章列表页）不显示。
+        只在资源详情页显示，首页（资源列表页）不显示。
         """
-        # 检查是否为摘要模式（首页/文章列表页）
+        # 检查是否为摘要模式（首页/资源列表页）
         # 通过kwargs中的is_summary参数判断
         is_summary = kwargs.get('is_summary', False)
         if is_summary:

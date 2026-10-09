@@ -1,6 +1,6 @@
 from django.core.management.base import BaseCommand
 
-from djangoblog.utils import cache
+from teachingplatform.utils import cache
 
 
 class Command(BaseCommand):

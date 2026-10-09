@@ -1,6 +1,6 @@
 /**
  * 图片灯箱组件
- * 点击文章内容中的图片可以查看大图
+ * 点击资源内容中的图片可以查看大图
  */
 export default function imageLightbox() {
   return {
@@ -9,7 +9,7 @@ export default function imageLightbox() {
     currentAlt: '',
 
     init() {
-      // 为所有文章内容中的图片添加点击事件
+      // 为所有资源内容中的图片添加点击事件
       this.$nextTick(() => {
         const images = document.querySelectorAll('.entry-content img');
         images.forEach(img => {

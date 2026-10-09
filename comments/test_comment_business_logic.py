@@ -79,7 +79,7 @@ class CommentCreationTest(TestCase):
         self.assertEqual(comment.author, self.commenter)
 
     def test_comment_article_relationship(self):
-        """测试评论与文章的关系"""
+        """测试评论与教学资源的关系"""
         comment = Comment.objects.create(
             body='Test comment',
             author=self.commenter,
@@ -87,7 +87,7 @@ class CommentCreationTest(TestCase):
         )
 
         self.assertEqual(comment.article, self.article)
-        # 验证可以通过文章查询到评论
+        # 验证可以通过教学资源查询到评论
         article_comments = Comment.objects.filter(article=self.article)
         self.assertIn(comment, article_comments)
 
@@ -124,7 +124,7 @@ class CommentModerationTest(TestCase):
             comment_status='o'
         )
 
-        # 获取或创建博客设置
+        # 获取或创建平台设置
         self.blog_settings, _ = BlogSettings.objects.get_or_create(
             id=1,
             defaults={'site_name': 'Test Blog'}
@@ -383,7 +383,7 @@ class CommentReplyTest(TestCase):
 
 
 class CommentArticleStatusTest(TestCase):
-    """测试评论与文章状态的关系"""
+    """测试评论与资源状态的关系"""
 
     def setUp(self):
         """设置测试环境"""
@@ -405,7 +405,7 @@ class CommentArticleStatusTest(TestCase):
         )
 
     def test_can_comment_on_open_comment_article(self):
-        """测试可以在开放评论的文章上评论"""
+        """测试可以在开放评论的教学资源上评论"""
         article = Article.objects.create(
             title='Open Comment Article',
             body='Content',
@@ -430,7 +430,7 @@ class CommentArticleStatusTest(TestCase):
         self.assertIsNotNone(comment.id)
 
     def test_comment_status_closed_validation(self):
-        """测试关闭评论的文章状态"""
+        """测试关闭评论的资源状态"""
         article = Article.objects.create(
             title='Closed Comment Article',
             body='Content',
@@ -441,14 +441,14 @@ class CommentArticleStatusTest(TestCase):
             comment_status='c'  # 关闭评论
         )
 
-        # 验证文章评论状态
+        # 验证资源评论状态
         self.assertEqual(article.comment_status, 'c')
 
         # 注意：实际的验证应该在视图层进行
         # 这里我们只测试模型层面的状态
 
     def test_comments_belong_to_correct_article(self):
-        """测试评论属于正确的文章"""
+        """测试评论属于正确的教学资源"""
         article1 = Article.objects.create(
             title='Article 1',
             body='Content 1',
@@ -481,7 +481,7 @@ class CommentArticleStatusTest(TestCase):
             is_enable=True
         )
 
-        # 验证评论属于正确的文章
+        # 验证评论属于正确的教学资源
         article1_comments = Comment.objects.filter(article=article1)
         article2_comments = Comment.objects.filter(article=article2)
 
@@ -524,7 +524,7 @@ class CommentQueryTest(TestCase):
         )
 
     def test_query_comments_by_article(self):
-        """测试按文章查询评论"""
+        """测试按教学资源查询评论"""
         # 创建多个评论
         for i in range(5):
             Comment.objects.create(

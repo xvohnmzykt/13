@@ -1,13 +1,13 @@
-from djangoblog.plugin_manage.base_plugin import BasePlugin
-from djangoblog.plugin_manage import hooks
-from djangoblog.plugin_manage.hook_constants import ARTICLE_CONTENT_HOOK_NAME
+from teachingplatform.plugin_manage.base_plugin import BasePlugin
+from teachingplatform.plugin_manage import hooks
+from teachingplatform.plugin_manage.hook_constants import ARTICLE_CONTENT_HOOK_NAME
 
 
 class ArticleCopyrightPlugin(BasePlugin):
-    PLUGIN_NAME = '文章结尾版权声明'
-    PLUGIN_DESCRIPTION = '一个在文章正文末尾添加版权声明的插件。'
+    PLUGIN_NAME = '教学资源版权声明'
+    PLUGIN_DESCRIPTION = '一个在教学资源正文末尾添加版权声明的插件。'
     PLUGIN_VERSION = '0.2.0'
-    PLUGIN_AUTHOR = 'liangliangyy'
+    PLUGIN_AUTHOR = '在线教学资源平台'
 
     # 2. 实现 register_hooks 方法，专门用于注册钩子
     def register_hooks(self):

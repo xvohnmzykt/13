@@ -77,16 +77,16 @@ class CloudflareCacheHandler:
 
     def _collect_article_urls(self, article, is_new: bool) -> List[str]:
         """
-        收集文章相关的URL
+        收集教学资源相关的URL
 
         Args:
-            article: 文章实例
-            is_new: 是否为新建文章
+            article: 教学资源实例
+            is_new: 是否为新建教学资源
 
         Returns:
             需要清除的URL列表
         """
-        from djangoblog.utils import get_current_site
+        from teachingplatform.utils import get_current_site
 
         try:
             site = get_current_site()
@@ -94,7 +94,7 @@ class CloudflareCacheHandler:
 
             urls = []
 
-            # 1. 文章详情页（必须清除）
+            # 1. 资源详情页（必须清除）
             article_url = base_url + article.get_absolute_url()
             urls.append(article_url)
             logger.debug(f"[CF Handler] Added article detail: {article_url}")
@@ -150,7 +150,7 @@ class CloudflareCacheHandler:
         Returns:
             需要清除的URL列表
         """
-        from djangoblog.utils import get_current_site
+        from teachingplatform.utils import get_current_site
 
         try:
             site = get_current_site()
@@ -158,7 +158,7 @@ class CloudflareCacheHandler:
 
             urls = []
 
-            # 评论所在的文章页
+            # 评论所在的教学资源页
             if comment.article:
                 article_url = base_url + comment.article.get_absolute_url()
                 urls.append(article_url)

@@ -1,7 +1,7 @@
 {
-  "name": "djangoblog-frontend",
+  "name": "teaching-resource-frontend",
   "version": "1.0.0",
-  "description": "Modern frontend for DjangoBlog",
+  "description": "在线教学资源平台前端资源（Vite + Tailwind CSS + Alpine.js + HTMX）",
   "type": "module",
   "scripts": {
     "dev": "vite",

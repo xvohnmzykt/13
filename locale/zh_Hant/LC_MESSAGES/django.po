@@ -72,7 +72,7 @@ msgstr "最後修改時間"
 msgid "create source"
 msgstr "來源"
 
-#: .\accounts\models.py:33 .\djangoblog\logentryadmin.py:81
+#: .\accounts\models.py:33 .\teachingplatform\logentryadmin.py:81
 msgid "user"
 msgstr "用戶"
 
@@ -94,30 +94,31 @@ msgstr "您正在重置密碼，驗證碼為：%(code)s，5分鐘內有效 請�
 #: .\blog\admin.py:13 .\blog\models.py:92 .\comments\models.py:17
 #: .\oauth\models.py:12
 msgid "author"
-msgstr "作者"
+msgstr "發佈者"
 
 #: .\blog\admin.py:53
 msgid "Publish selected articles"
-msgstr "發布選中的文章"
+msgstr "發布選中的教學資源"
 
 #: .\blog\admin.py:54
 msgid "Draft selected articles"
-msgstr "選中文章設為草稿"
+msgstr "選中教學資源設為草稿"
 
 #: .\blog\admin.py:55
 msgid "Close article comments"
-msgstr "關閉文章評論"
+msgstr "關閉教學資源評論"
 
 #: .\blog\admin.py:56
 msgid "Open article comments"
-msgstr "打開文章評論"
+msgstr "打開教學資源評論"
 
 #: .\blog\admin.py:89 .\blog\models.py:101 .\blog\models.py:183
 #: .\templates\blog\tags\sidebar.html:40
 msgid "category"
-msgstr "分類目錄"
+msgstr "課程分類"
 
-#: .\blog\models.py:20 .\blog\models.py:179 .\templates\share_layout\nav.html:8
+#: .\blog\models.py:20 .\blog\models.py:179
+#: .\templates\share_layout\nav.html:8
 msgid "index"
 msgstr "首頁"
 
@@ -127,7 +128,7 @@ msgstr "列表"
 
 #: .\blog\models.py:22
 msgid "post"
-msgstr "文章"
+msgstr "教學資源"
 
 #: .\blog\models.py:23
 msgid "all"
@@ -159,7 +160,7 @@ msgstr "關閉"
 
 #: .\blog\models.py:71 .\comments\admin.py:47
 msgid "Article"
-msgstr "文章"
+msgstr "教學資源"
 
 #: .\blog\models.py:72
 msgid "Page"
@@ -207,7 +208,7 @@ msgstr "標簽"
 
 #: .\blog\models.py:115 .\comments\models.py:21
 msgid "article"
-msgstr "文章"
+msgstr "教學資源"
 
 #: .\blog\models.py:171
 msgid "category name"
@@ -251,11 +252,11 @@ msgstr "側邊欄"
 
 #: .\blog\models.py:299
 msgid "site name"
-msgstr "站點名稱"
+msgstr "平臺名稱"
 
 #: .\blog\models.py:305
 msgid "site description"
-msgstr "站點描述"
+msgstr "平臺簡介"
 
 #: .\blog\models.py:311
 msgid "site seo description"
@@ -263,15 +264,15 @@ msgstr "站點SEO描述"
 
 #: .\blog\models.py:313
 msgid "site keywords"
-msgstr "關鍵字"
+msgstr "平臺關鍵詞"
 
 #: .\blog\models.py:318
 msgid "article sub length"
-msgstr "文章摘要長度"
+msgstr "教學資源摘要長度"
 
 #: .\blog\models.py:319
 msgid "sidebar article count"
-msgstr "側邊欄文章數目"
+msgstr "側邊欄教學資源數目"
 
 #: .\blog\models.py:320
 msgid "sidebar comment count"
@@ -279,7 +280,7 @@ msgstr "側邊欄評論數目"
 
 #: .\blog\models.py:321
 msgid "article comment count"
-msgstr "文章頁面默認顯示評論數目"
+msgstr "教學資源頁面默認顯示評論數目"
 
 #: .\blog\models.py:322
 msgid "show adsense"
@@ -295,7 +296,7 @@ msgstr "公共頭部"
 
 #: .\blog\models.py:352
 msgid "Website configuration"
-msgstr "網站配置"
+msgstr "平臺配置"
 
 #: .\blog\models.py:360
 msgid "There can only be one configuration"
@@ -347,13 +348,11 @@ msgstr "感謝你的評論"
 #, python-format
 msgid ""
 "<p>Thank you very much for your comments on this site</p>\n"
-"                    You can visit <a href=\"%(article_url)s\" rel=\"bookmark"
-"\">%(article_title)s</a>\n"
+"                    You can visit <a href=\"%(article_url)s\" rel=\"bookmark\">%(article_title)s</a>\n"
 "                    to review your comments,\n"
 "                    Thank you again!\n"
 "                    <br />\n"
-"                    If the link above cannot be opened, please copy this "
-"link to your browser.\n"
+"                    If the link above cannot be opened, please copy this link to your browser.\n"
 "                    %(article_url)s"
 msgstr ""
 "<p>非常感謝您對此網站的評論</p>\n"
@@ -367,19 +366,16 @@ msgstr ""
 #: .\comments\utils.py:26
 #, python-format
 msgid ""
-"Your comment on <a href=\"%(article_url)s\" rel=\"bookmark\">"
-"%(article_title)s</a><br/> has \n"
+"Your comment on <a href=\"%(article_url)s\" rel=\"bookmark\">%(article_title)s</a><br/> has \n"
 "                   received a reply. <br/> %(comment_body)s\n"
 "                    <br/>   \n"
 "                    go check it out!\n"
 "                     <br/>\n"
-"                     If the link above cannot be opened, please copy this "
-"link to your browser.\n"
+"                     If the link above cannot be opened, please copy this link to your browser.\n"
 "                     %(article_url)s\n"
 "                    "
 msgstr ""
-"您對 <a href=\"%(article_url)s\" rel=\"bookmark\">%(article_title)s</a><br/> "
-"的評論有\n"
+"您對 <a href=\"%(article_url)s\" rel=\"bookmark\">%(article_title)s</a><br/> 的評論有\n"
 " 收到回復。<br/> %(comment_body)s\n"
 "<br/>\n"
 "快去看看吧！\n"
@@ -388,19 +384,19 @@ msgstr ""
 " %(article_url)s\n"
 " "
 
-#: .\djangoblog\logentryadmin.py:63
+#: .\teachingplatform\logentryadmin.py:63
 msgid "object"
 msgstr "對象"
 
-#: .\djangoblog\settings.py:140
+#: .\teachingplatform\settings.py:140
 msgid "English"
 msgstr "英文"
 
-#: .\djangoblog\settings.py:141
+#: .\teachingplatform\settings.py:141
 msgid "Simplified Chinese"
 msgstr "簡體中文"
 
-#: .\djangoblog\settings.py:142
+#: .\teachingplatform\settings.py:142
 msgid "Traditional Chinese"
 msgstr "繁體中文"
 
@@ -428,16 +424,13 @@ msgstr "已經存在"
 #, python-format
 msgid ""
 "\n"
-"     <p>Congratulations, you have successfully bound your email address. You "
-"can use\n"
-"      %(oauthuser_type)s to directly log in to this website without a "
-"password.</p>\n"
+"     <p>Congratulations, you have successfully bound your email address. You can use\n"
+"      %(oauthuser_type)s to directly log in to this website without a password.</p>\n"
 "       You are welcome to continue to follow this site, the address is\n"
 "        <a href=\"%(site)s\" rel=\"bookmark\">%(site)s</a>\n"
 "            Thank you again!\n"
 "            <br />\n"
-"        If the link above cannot be opened, please copy this link to your "
-"browser.\n"
+"        If the link above cannot be opened, please copy this link to your browser.\n"
 "        %(site)s\n"
 "    "
 msgstr ""
@@ -466,8 +459,7 @@ msgid ""
 "\n"
 "                 Thank you again!\n"
 "                 <br />\n"
-"                 If the link above cannot be opened, please copy this link "
-"to your browser.\n"
+"                 If the link above cannot be opened, please copy this link to your browser.\n"
 "                  <br />\n"
 "                 %(url)s\n"
 "                "
@@ -500,12 +492,10 @@ msgstr "綁定成功"
 #: .\oauth\views.py:247
 #, python-format
 msgid ""
-"Congratulations, you have successfully bound your email address. You can use "
-"%(oauthuser_type)s to directly log in to this website without a password. "
+"Congratulations, you have successfully bound your email address. You can use"
+" %(oauthuser_type)s to directly log in to this website without a password. "
 "You are welcome to continue to follow this site."
-msgstr ""
-"恭喜您綁定成功，您以後可以使用%(oauthuser_type)s來直接免密碼登錄本站啦，感謝"
-"您對本站對關註。"
+msgstr "恭喜您綁定成功，您以後可以使用%(oauthuser_type)s來直接免密碼登錄本站啦，感謝您對本站對關註。"
 
 #: .\templates\account\forget_password.html:7
 msgid "forget the password"
@@ -540,7 +530,7 @@ msgstr "返回首頁吧"
 #: .\templates\blog\article_archives.html:7
 #: .\templates\blog\article_archives.html:24
 msgid "article archive"
-msgstr "文章歸檔"
+msgstr "教學資源歸檔"
 
 #: .\templates\blog\article_archives.html:32
 msgid "year"
@@ -578,12 +568,11 @@ msgstr "由"
 #, python-format
 msgid ""
 "\n"
-"               title=\"View all articles published by "
-"%(article.author.username)s\"\n"
+"               title=\"View all articles published by %(article.author.username)s\"\n"
 "                    "
 msgstr ""
 "\n"
-"               title=\"查看所有由 %(article.author.username)s\"發布的文章\n"
+"               title=\"查看所有由 %(article.author.username)s\"發布的教學資源\n"
 "                    "
 
 #: .\templates\blog\tags\article_meta_info.html:44
@@ -596,15 +585,15 @@ msgstr "編輯"
 
 #: .\templates\blog\tags\article_pagination.html:4
 msgid "article navigation"
-msgstr "文章導航"
+msgstr "教學資源導航"
 
 #: .\templates\blog\tags\article_pagination.html:9
 msgid "earlier articles"
-msgstr "早期文章"
+msgstr "早期教學資源"
 
 #: .\templates\blog\tags\article_pagination.html:12
 msgid "newer articles"
-msgstr "較新文章"
+msgstr "較新教學資源"
 
 #: .\templates\blog\tags\article_tag_list.html:5
 msgid "tags"
@@ -624,7 +613,7 @@ msgstr "發表於"
 
 #: .\templates\blog\tags\sidebar.html:65
 msgid "recent articles"
-msgstr "近期文章"
+msgstr "近期教學資源"
 
 #: .\templates\blog\tags\sidebar.html:77
 msgid "bookmark"
@@ -665,7 +654,7 @@ msgstr "快捷登錄"
 
 #: .\templates\share_layout\nav.html:26
 msgid "Article archive"
-msgstr "文章歸檔"
+msgstr "教學資源歸檔"
 
 #: templates/blog/article_detail.html templates/blog/article_index.html
 msgid "Discover more"

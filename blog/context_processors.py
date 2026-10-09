@@ -2,7 +2,7 @@ import logging
 
 from django.utils import timezone
 
-from djangoblog.utils import cache, get_blog_setting
+from teachingplatform.utils import cache, get_blog_setting
 from .models import Category, Article
 
 logger = logging.getLogger(__name__)

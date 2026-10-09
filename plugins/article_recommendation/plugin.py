@@ -1,32 +1,32 @@
 import logging
-from djangoblog.plugin_manage.base_plugin import BasePlugin
-from djangoblog.plugin_manage import hooks
-from djangoblog.plugin_manage.hook_constants import ARTICLE_DETAIL_LOAD
+from teachingplatform.plugin_manage.base_plugin import BasePlugin
+from teachingplatform.plugin_manage import hooks
+from teachingplatform.plugin_manage.hook_constants import ARTICLE_DETAIL_LOAD
 from blog.models import Article
 
 logger = logging.getLogger(__name__)
 
 
 class ArticleRecommendationPlugin(BasePlugin):
-    PLUGIN_NAME = '文章推荐'
-    PLUGIN_DESCRIPTION = '智能文章推荐系统，支持多位置展示'
+    PLUGIN_NAME = '教学资源推荐'
+    PLUGIN_DESCRIPTION = '智能教学资源推荐系统，支持多位置展示'
     PLUGIN_VERSION = '1.0.0'
-    PLUGIN_AUTHOR = 'liangliangyy'
+    PLUGIN_AUTHOR = '在线教学资源平台'
     
     # 支持的位置
     SUPPORTED_POSITIONS = ['article_bottom']
     
     # 各位置优先级
     POSITION_PRIORITIES = {
-        'article_bottom': 80,  # 文章底部优先级
+        'article_bottom': 80,  # 教学资源底部优先级
     }
     
     # 插件配置
     CONFIG = {
-        'article_bottom_count': 8,  # 文章底部推荐数量
+        'article_bottom_count': 8,  # 教学资源底部推荐数量
         'sidebar_count': 5,         # 侧边栏推荐数量
         'enable_category_fallback': True,  # 启用分类回退
-        'enable_popular_fallback': True,   # 启用热门文章回退
+        'enable_popular_fallback': True,   # 启用热门资源回退
     }
     
     def register_hooks(self):
@@ -34,24 +34,24 @@ class ArticleRecommendationPlugin(BasePlugin):
         hooks.register(ARTICLE_DETAIL_LOAD, self.on_article_detail_load)
     
     def on_article_detail_load(self, article, context, request, *args, **kwargs):
-        """文章详情页加载时的处理"""
+        """资源详情页加载时的处理"""
         # 可以在这里预加载推荐数据到context中
         recommendations = self.get_recommendations(article)
         context['article_recommendations'] = recommendations
     
     def should_display(self, position, context, **kwargs):
         """条件显示逻辑"""
-        # 只在文章详情页底部显示
+        # 只在资源详情页底部显示
         if position == 'article_bottom':
             article = kwargs.get('article') or context.get('article')
-            # 检查是否有文章对象，以及是否不是索引页面
+            # 检查是否有教学资源对象，以及是否不是索引页面
             is_index = context.get('isindex', False) if hasattr(context, 'get') else False
             return article is not None and not is_index
             
         return False
     
     def render_article_bottom_widget(self, context, **kwargs):
-        """渲染文章底部推荐"""
+        """渲染教学资源底部推荐"""
         article = kwargs.get('article') or context.get('article')
         if not article:
             return None
@@ -88,11 +88,11 @@ class ArticleRecommendationPlugin(BasePlugin):
         count = kwargs.get('count', self.CONFIG['sidebar_count'])
         
         if article:
-            # 文章页面，显示相关文章
+            # 资源详情页，显示相关资源
             recommendations = self.get_recommendations(article, count=count)
-            title = '相关文章'
+            title = '相关资源'
         else:
-            # 其他页面，显示热门文章
+            # 其他页面，显示热门资源
             recommendations = self.get_popular_articles(count=count)
             title = '热门推荐'
             
@@ -125,7 +125,7 @@ class ArticleRecommendationPlugin(BasePlugin):
         return ['js/recommendation.js']
     
     def get_recommendations(self, article, count=5):
-        """获取推荐文章"""
+        """获取推荐资源"""
         if not article:
             return []
         
@@ -163,7 +163,7 @@ class ArticleRecommendationPlugin(BasePlugin):
             ).order_by('-views')[:needed])
             recommendations.extend(category_based)
         
-        # 3. 如果还是不够，推荐热门文章
+        # 3. 如果还是不够，推荐热门资源
         if len(recommendations) < count and self.CONFIG['enable_popular_fallback']:
             needed = count - len(recommendations)
             existing_ids = [r.id for r in recommendations] + [article.id]
@@ -185,7 +185,7 @@ class ArticleRecommendationPlugin(BasePlugin):
             if rec.title and len(rec.title.strip()) > 0:
                 valid_recommendations.append(rec)
             else:
-                logger.warning(f"过滤掉空标题文章: ID={rec.id}, 标题='{rec.title}'")
+                logger.warning(f"过滤掉空标题教学资源: ID={rec.id}, 标题='{rec.title}'")
         
         # 调试：记录推荐结果
         logger.info(f"原始推荐数量: {len(recommendations)}, 有效推荐数量: {len(valid_recommendations)}")
@@ -195,7 +195,7 @@ class ArticleRecommendationPlugin(BasePlugin):
         return valid_recommendations[:count]
     
     def get_popular_articles(self, count=3):
-        """获取热门文章"""
+        """获取热门资源"""
         return list(Article.objects.filter(
             status='p'
         ).order_by('-views')[:count])

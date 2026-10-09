@@ -11,9 +11,9 @@ from django.utils.translation import gettext_lazy as _
 from mdeditor.fields import MDTextField
 from uuslug import slugify
 
-from djangoblog.utils import cache_decorator, cache
-from djangoblog.utils import get_current_site
-from djangoblog.constants import CacheTimeout, CacheKey
+from teachingplatform.utils import cache_decorator, cache
+from teachingplatform.utils import get_current_site
+from teachingplatform.constants import CacheTimeout, CacheKey
 
 logger = logging.getLogger(__name__)
 
@@ -60,7 +60,7 @@ class BaseModel(models.Model):
 
 
 class Article(BaseModel):
-    """文章"""
+    """教学资源"""
     STATUS_CHOICES = (
         ('d', _('Draft')),
         ('p', _('Published')),
@@ -120,9 +120,9 @@ class Article(BaseModel):
         indexes = [
             # 优化列表查询：type + status + pub_time组合索引
             models.Index(fields=['type', 'status', '-pub_time'], name='idx_type_status_pub'),
-            # 优化热门文章查询：status + views组合索引
+            # 优化热门资源查询：status + views组合索引
             models.Index(fields=['status', '-views'], name='idx_status_views'),
-            # 优化作者文章查询：author + status + type组合索引
+            # 优化作者教学资源查询：author + status + type组合索引
             models.Index(fields=['author', 'status', 'type'], name='idx_author_status_type'),
             # 优化分类查询：category + status组合索引
             models.Index(fields=['category', 'status'], name='idx_category_status'),
@@ -189,7 +189,7 @@ class Article(BaseModel):
 
 
 class Category(BaseModel):
-    """文章分类"""
+    """课程分类"""
     name = models.CharField(_('category name'), max_length=30, unique=True)
     parent_category = models.ForeignKey(
         'self',
@@ -252,7 +252,7 @@ class Category(BaseModel):
 
 
 class Tag(BaseModel):
-    """文章标签"""
+    """资源标签"""
     name = models.CharField(_('tag name'), max_length=30, unique=True)
     slug = models.SlugField(default='no-slug', max_length=60, blank=True)
 
@@ -401,5 +401,5 @@ class BlogSettings(models.Model):
 
     def save(self, *args, **kwargs):
         super().save(*args, **kwargs)
-        from djangoblog.utils import cache
+        from teachingplatform.utils import cache
         cache.clear()

@@ -8,13 +8,13 @@ from werobot import WeRoBot
 from werobot.replies import ArticlesReply, Article
 from werobot.session.filestorage import FileStorage
 
-from djangoblog.utils import get_sha256
+from teachingplatform.utils import get_sha256
 from servermanager.api.blogapi import BlogApi
 from servermanager.api.commonapi import ChatGPT, CommandHandler
 from .MemcacheStorage import MemcacheStorage
 
 robot = WeRoBot(token=os.environ.get('DJANGO_WEROBOT_TOKEN')
-                      or 'lylinux', enable_session=True)
+                      or 'teachingplatform', enable_session=True)
 memstorage = MemcacheStorage()
 if memstorage.is_available:
     robot.config['SESSION_STORAGE'] = memstorage
@@ -56,14 +56,14 @@ def search(message, session):
         reply = convert_to_article_reply(articles, message)
         return reply
     else:
-        return '没有找到相关文章。'
+        return '没有找到相关资源。'
 
 
 @robot.filter(re.compile(r'^category\s*$', re.I))
 def category(message, session):
     categorys = blogapi.get_category_lists()
     content = ','.join(map(lambda x: x.name, categorys))
-    return '所有文章分类目录：' + content
+    return '所有课程分类目录：' + content
 
 
 @robot.filter(re.compile(r'^recent\s*$', re.I))
@@ -73,7 +73,7 @@ def recents(message, session):
         reply = convert_to_article_reply(articles, message)
         return reply
     else:
-        return "暂时还没有文章"
+        return "暂时还没有教学资源"
 
 
 @robot.filter(re.compile('^help$', re.I))
@@ -81,12 +81,12 @@ def help(message, session):
     return '''欢迎关注!
             默认会与图灵机器人聊天~~
         你可以通过下面这些命令来获得信息
-        ?关键字搜索文章.
+        ?关键字搜索教学资源.
         如?python.
-        category获得文章分类目录及文章数.
-        category-***获得该分类目录文章
+        category获得课程分类目录及教学资源数.
+        category-***获得该分类目录教学资源
         如category-python
-        recent获得最新文章
+        recent获得最新教学资源
         help获得帮助.
         weather:获得天气
         如weather:西安

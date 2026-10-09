@@ -1,6 +1,6 @@
 """
 Blog Admin 测试
-测试文章、分类、标签等后台管理功能
+测试教学资源、分类、标签等后台管理功能
 """
 from django.contrib.admin.sites import AdminSite
 from django.test import RequestFactory
@@ -8,7 +8,7 @@ from django.urls import reverse
 
 from blog.admin import ArticlelAdmin
 from blog.models import Article, Category, Tag
-from djangoblog.test_base import BaseTestCase, AdminTestMixin
+from teachingplatform.test_base import BaseTestCase, AdminTestMixin
 
 
 class ArticleAdminTest(BaseTestCase, AdminTestMixin):
@@ -20,7 +20,7 @@ class ArticleAdminTest(BaseTestCase, AdminTestMixin):
         self.article_admin = ArticlelAdmin(Article, self.site)
 
     def test_admin_list_display(self):
-        """测试文章列表显示"""
+        """测试资源列表显示"""
         self.login_admin()
         response = self.assert_admin_accessible(Article)
         self.assertContains(response, self.article.title)
@@ -48,19 +48,19 @@ class ArticleAdminTest(BaseTestCase, AdminTestMixin):
         self.assertEqual(response.status_code, 200)
 
     def test_admin_change_article(self):
-        """测试修改文章"""
+        """测试修改教学资源"""
         self.login_admin()
         url = self.get_admin_change_url(self.article)
         response = self.client.get(url)
         self.assertEqual(response.status_code, 200)
 
     def test_save_model_sets_author(self):
-        """测试保存文章时自动设置作者"""
+        """测试保存教学资源时自动设置作者"""
         request = self.factory.post('/')
         request.user = self.admin_user
 
         new_article = Article(
-            title='新文章测试保存',
+            title='新教学资源测试保存',
             body='新内容',
             category=self.category,
             type='a',
@@ -70,7 +70,7 @@ class ArticleAdminTest(BaseTestCase, AdminTestMixin):
 
         # 测试 admin 的 save_model 方法
         self.article_admin.save_model(request, new_article, None, None)
-        # 验证文章已保存
+        # 验证教学资源已保存
         self.assertIsNotNone(new_article.pk)
 
     def test_get_list_display(self):

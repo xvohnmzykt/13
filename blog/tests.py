@@ -13,7 +13,7 @@ from accounts.models import BlogUser
 from blog.forms import BlogSearchForm
 from blog.models import Article, Category, Tag, SideBar, Links
 from blog.templatetags.blog_tags import load_pagination_info, load_articletags, highlight_search_term, highlight_content
-from djangoblog.utils import get_current_site, get_sha256
+from teachingplatform.utils import get_current_site, get_sha256
 from oauth.models import OAuthUser, OAuthConfig
 
 
@@ -27,9 +27,9 @@ class ArticleTest(TestCase):
     def test_validate_article(self):
         site = get_current_site().domain
         user = BlogUser.objects.get_or_create(
-            email="liangliangyy@gmail.com",
-            username="liangliangyy")[0]
-        user.set_password("liangliangyy")
+            email="teacher@gmail.com",
+            username="teacher")[0]
+        user.set_password("teacher")
         user.is_staff = True
         user.is_superuser = True
         user.save()
@@ -87,7 +87,7 @@ class ArticleTest(TestCase):
 
         response = self.client.get(article.get_absolute_url())
         self.assertEqual(response.status_code, 200)
-        from djangoblog.spider_notify import SpiderNotify
+        from teachingplatform.spider_notify import SpiderNotify
         SpiderNotify.notify(article.get_absolute_url())
         response = self.client.get(tag.get_absolute_url())
         self.assertEqual(response.status_code, 200)
@@ -100,7 +100,7 @@ class ArticleTest(TestCase):
         s = load_articletags(article)
         self.assertIsNotNone(s)
 
-        self.client.login(username='liangliangyy', password='liangliangyy')
+        self.client.login(username='teacher', password='teacher')
 
         response = self.client.get(reverse('blog:archives'))
         self.assertEqual(response.status_code, 200)
@@ -109,30 +109,30 @@ class ArticleTest(TestCase):
         self.check_pagination(p, '', '')
 
         p = Paginator(Article.objects.filter(tags=tag), settings.PAGINATE_BY)
-        self.check_pagination(p, '分类标签归档', tag.slug)
+        self.check_pagination(p, '标签归档', tag.slug)
 
         p = Paginator(
             Article.objects.filter(
-                author__username='liangliangyy'), settings.PAGINATE_BY)
-        self.check_pagination(p, '作者文章归档', 'liangliangyy')
+                author__username='teacher'), settings.PAGINATE_BY)
+        self.check_pagination(p, '作者教学资源归档', 'teacher')
 
         p = Paginator(Article.objects.filter(category=category), settings.PAGINATE_BY)
-        self.check_pagination(p, '分类目录归档', category.slug)
+        self.check_pagination(p, '课程分类归档', category.slug)
 
         f = BlogSearchForm()
         f.search()
-        # self.client.login(username='liangliangyy', password='liangliangyy')
-        from djangoblog.spider_notify import SpiderNotify
+        # self.client.login(username='teacher', password='teacher')
+        from teachingplatform.spider_notify import SpiderNotify
         SpiderNotify.baidu_notify([article.get_full_url()])
 
         from blog.templatetags.blog_tags import gravatar_url, gravatar
-        u = gravatar_url('liangliangyy@gmail.com')
-        u = gravatar('liangliangyy@gmail.com')
+        u = gravatar_url('teacher@gmail.com')
+        u = gravatar('teacher@gmail.com')
 
         link = Links(
             sequence=1,
-            name="lylinux",
-            link='https://wwww.lylinux.net')
+            name="teachingplatform",
+            link='https://teaching-platform.example.com')
         link.save()
         response = self.client.get('/links.html')
         self.assertEqual(response.status_code, 200)
@@ -177,7 +177,7 @@ class ArticleTest(TestCase):
                 '/upload?sign=' + sign, form_data, follow=True)
             self.assertEqual(rsp.status_code, 200)
         os.remove(imagepath)
-        from djangoblog.utils import save_user_avatar, send_email
+        from teachingplatform.utils import save_user_avatar, send_email
         send_email(['qq@qq.com'], 'testTitle', 'testContent')
         save_user_avatar(
             'https://www.python.org/static/img/python-logo.png')
@@ -188,9 +188,9 @@ class ArticleTest(TestCase):
 
     def test_commands(self):
         user = BlogUser.objects.get_or_create(
-            email="liangliangyy@gmail.com",
-            username="liangliangyy")[0]
-        user.set_password("liangliangyy")
+            email="teacher@gmail.com",
+            username="teacher")[0]
+        user.set_password("teacher")
         user.is_staff = True
         user.is_superuser = True
         user.save()
@@ -295,11 +295,11 @@ class SearchHighlightTest(TestCase):
 
     def test_chinese_keyword_highlight(self):
         """测试中文关键词高亮"""
-        text = "这是一个Django博客系统"
+        text = "这是一个Django在线教学资源平台"
         result = highlight_search_term(text, "Django")
         self.assertIn("<mark>Django</mark>", result)
 
         # 测试中文关键词
-        text = "欢迎使用DjangoBlog系统"
+        text = "欢迎使用在线教学资源平台系统"
         result = highlight_search_term(text, "Django")
         self.assertIn("<mark>Django</mark>", result)

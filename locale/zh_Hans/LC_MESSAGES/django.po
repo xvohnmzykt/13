@@ -72,7 +72,7 @@ msgstr "最后修改时间"
 msgid "create source"
 msgstr "来源"
 
-#: .\accounts\models.py:33 .\djangoblog\logentryadmin.py:81
+#: .\accounts\models.py:33 .\teachingplatform\logentryadmin.py:81
 msgid "user"
 msgstr "用户"
 
@@ -94,30 +94,31 @@ msgstr "您正在重置密码，验证码为：%(code)s，5分钟内有效 请�
 #: .\blog\admin.py:13 .\blog\models.py:92 .\comments\models.py:17
 #: .\oauth\models.py:12
 msgid "author"
-msgstr "作者"
+msgstr "发布者"
 
 #: .\blog\admin.py:53
 msgid "Publish selected articles"
-msgstr "发布选中的文章"
+msgstr "发布选中的教学资源"
 
 #: .\blog\admin.py:54
 msgid "Draft selected articles"
-msgstr "选中文章设为草稿"
+msgstr "选中教学资源设为草稿"
 
 #: .\blog\admin.py:55
 msgid "Close article comments"
-msgstr "关闭文章评论"
+msgstr "关闭教学资源评论"
 
 #: .\blog\admin.py:56
 msgid "Open article comments"
-msgstr "打开文章评论"
+msgstr "打开教学资源评论"
 
 #: .\blog\admin.py:89 .\blog\models.py:101 .\blog\models.py:183
 #: .\templates\blog\tags\sidebar.html:40
 msgid "category"
-msgstr "分类目录"
+msgstr "课程分类"
 
-#: .\blog\models.py:20 .\blog\models.py:179 .\templates\share_layout\nav.html:8
+#: .\blog\models.py:20 .\blog\models.py:179
+#: .\templates\share_layout\nav.html:8
 msgid "index"
 msgstr "首页"
 
@@ -127,7 +128,7 @@ msgstr "列表"
 
 #: .\blog\models.py:22
 msgid "post"
-msgstr "文章"
+msgstr "教学资源"
 
 #: .\blog\models.py:23
 msgid "all"
@@ -159,7 +160,7 @@ msgstr "关闭"
 
 #: .\blog\models.py:71 .\comments\admin.py:47
 msgid "Article"
-msgstr "文章"
+msgstr "教学资源"
 
 #: .\blog\models.py:72
 msgid "Page"
@@ -207,7 +208,7 @@ msgstr "标签"
 
 #: .\blog\models.py:115 .\comments\models.py:21
 msgid "article"
-msgstr "文章"
+msgstr "教学资源"
 
 #: .\blog\models.py:171
 msgid "category name"
@@ -251,11 +252,11 @@ msgstr "侧边栏"
 
 #: .\blog\models.py:299
 msgid "site name"
-msgstr "站点名称"
+msgstr "平台名称"
 
 #: .\blog\models.py:305
 msgid "site description"
-msgstr "站点描述"
+msgstr "平台简介"
 
 #: .\blog\models.py:311
 msgid "site seo description"
@@ -263,15 +264,15 @@ msgstr "站点SEO描述"
 
 #: .\blog\models.py:313
 msgid "site keywords"
-msgstr "关键字"
+msgstr "平台关键词"
 
 #: .\blog\models.py:318
 msgid "article sub length"
-msgstr "文章摘要长度"
+msgstr "教学资源摘要长度"
 
 #: .\blog\models.py:319
 msgid "sidebar article count"
-msgstr "侧边栏文章数目"
+msgstr "侧边栏教学资源数目"
 
 #: .\blog\models.py:320
 msgid "sidebar comment count"
@@ -279,7 +280,7 @@ msgstr "侧边栏评论数目"
 
 #: .\blog\models.py:321
 msgid "article comment count"
-msgstr "文章页面默认显示评论数目"
+msgstr "教学资源页面默认显示评论数目"
 
 #: .\blog\models.py:322
 msgid "show adsense"
@@ -295,7 +296,7 @@ msgstr "公共头部"
 
 #: .\blog\models.py:352
 msgid "Website configuration"
-msgstr "网站配置"
+msgstr "平台配置"
 
 #: .\blog\models.py:360
 msgid "There can only be one configuration"
@@ -347,13 +348,11 @@ msgstr "感谢你的评论"
 #, python-format
 msgid ""
 "<p>Thank you very much for your comments on this site</p>\n"
-"                    You can visit <a href=\"%(article_url)s\" rel=\"bookmark"
-"\">%(article_title)s</a>\n"
+"                    You can visit <a href=\"%(article_url)s\" rel=\"bookmark\">%(article_title)s</a>\n"
 "                    to review your comments,\n"
 "                    Thank you again!\n"
 "                    <br />\n"
-"                    If the link above cannot be opened, please copy this "
-"link to your browser.\n"
+"                    If the link above cannot be opened, please copy this link to your browser.\n"
 "                    %(article_url)s"
 msgstr ""
 "<p>非常感谢您对此网站的评论</p>\n"
@@ -367,19 +366,16 @@ msgstr ""
 #: .\comments\utils.py:26
 #, python-format
 msgid ""
-"Your comment on <a href=\"%(article_url)s\" rel=\"bookmark\">"
-"%(article_title)s</a><br/> has \n"
+"Your comment on <a href=\"%(article_url)s\" rel=\"bookmark\">%(article_title)s</a><br/> has \n"
 "                   received a reply. <br/> %(comment_body)s\n"
 "                    <br/>   \n"
 "                    go check it out!\n"
 "                     <br/>\n"
-"                     If the link above cannot be opened, please copy this "
-"link to your browser.\n"
+"                     If the link above cannot be opened, please copy this link to your browser.\n"
 "                     %(article_url)s\n"
 "                    "
 msgstr ""
-"您对 <a href=\"%(article_url)s\" rel=\"bookmark\">%(article_title)s</a><br/> "
-"的评论有\n"
+"您对 <a href=\"%(article_url)s\" rel=\"bookmark\">%(article_title)s</a><br/> 的评论有\n"
 " 收到回复。<br/> %(comment_body)s\n"
 "<br/>\n"
 "快去看看吧！\n"
@@ -388,19 +384,19 @@ msgstr ""
 " %(article_url)s\n"
 " "
 
-#: .\djangoblog\logentryadmin.py:63
+#: .\teachingplatform\logentryadmin.py:63
 msgid "object"
 msgstr "对象"
 
-#: .\djangoblog\settings.py:140
+#: .\teachingplatform\settings.py:140
 msgid "English"
 msgstr "英文"
 
-#: .\djangoblog\settings.py:141
+#: .\teachingplatform\settings.py:141
 msgid "Simplified Chinese"
 msgstr "简体中文"
 
-#: .\djangoblog\settings.py:142
+#: .\teachingplatform\settings.py:142
 msgid "Traditional Chinese"
 msgstr "繁体中文"
 
@@ -428,16 +424,13 @@ msgstr "已经存在"
 #, python-format
 msgid ""
 "\n"
-"     <p>Congratulations, you have successfully bound your email address. You "
-"can use\n"
-"      %(oauthuser_type)s to directly log in to this website without a "
-"password.</p>\n"
+"     <p>Congratulations, you have successfully bound your email address. You can use\n"
+"      %(oauthuser_type)s to directly log in to this website without a password.</p>\n"
 "       You are welcome to continue to follow this site, the address is\n"
 "        <a href=\"%(site)s\" rel=\"bookmark\">%(site)s</a>\n"
 "            Thank you again!\n"
 "            <br />\n"
-"        If the link above cannot be opened, please copy this link to your "
-"browser.\n"
+"        If the link above cannot be opened, please copy this link to your browser.\n"
 "        %(site)s\n"
 "    "
 msgstr ""
@@ -466,8 +459,7 @@ msgid ""
 "\n"
 "                 Thank you again!\n"
 "                 <br />\n"
-"                 If the link above cannot be opened, please copy this link "
-"to your browser.\n"
+"                 If the link above cannot be opened, please copy this link to your browser.\n"
 "                  <br />\n"
 "                 %(url)s\n"
 "                "
@@ -500,12 +492,10 @@ msgstr "绑定成功"
 #: .\oauth\views.py:247
 #, python-format
 msgid ""
-"Congratulations, you have successfully bound your email address. You can use "
-"%(oauthuser_type)s to directly log in to this website without a password. "
+"Congratulations, you have successfully bound your email address. You can use"
+" %(oauthuser_type)s to directly log in to this website without a password. "
 "You are welcome to continue to follow this site."
-msgstr ""
-"恭喜您绑定成功，您以后可以使用%(oauthuser_type)s来直接免密码登录本站啦，感谢"
-"您对本站对关注。"
+msgstr "恭喜您绑定成功，您以后可以使用%(oauthuser_type)s来直接免密码登录本站啦，感谢您对本站对关注。"
 
 #: .\templates\account\forget_password.html:7
 msgid "forget the password"
@@ -539,7 +529,7 @@ msgstr "返回首页吧"
 #: .\templates\blog\article_archives.html:7
 #: .\templates\blog\article_archives.html:24
 msgid "article archive"
-msgstr "文章归档"
+msgstr "教学资源归档"
 
 #: .\templates\blog\article_archives.html:32
 msgid "year"
@@ -577,12 +567,11 @@ msgstr "由"
 #, python-format
 msgid ""
 "\n"
-"               title=\"View all articles published by "
-"%(article.author.username)s\"\n"
+"               title=\"View all articles published by %(article.author.username)s\"\n"
 "                    "
 msgstr ""
 "\n"
-"               title=\"查看所有由 %(article.author.username)s\"发布的文章\n"
+"               title=\"查看所有由 %(article.author.username)s\"发布的教学资源\n"
 "                    "
 
 #: .\templates\blog\tags\article_meta_info.html:44
@@ -595,15 +584,15 @@ msgstr "编辑"
 
 #: .\templates\blog\tags\article_pagination.html:4
 msgid "article navigation"
-msgstr "文章导航"
+msgstr "教学资源导航"
 
 #: .\templates\blog\tags\article_pagination.html:9
 msgid "earlier articles"
-msgstr "早期文章"
+msgstr "早期教学资源"
 
 #: .\templates\blog\tags\article_pagination.html:12
 msgid "newer articles"
-msgstr "较新文章"
+msgstr "较新教学资源"
 
 #: .\templates\blog\tags\article_tag_list.html:5
 msgid "tags"
@@ -623,7 +612,7 @@ msgstr "发表于"
 
 #: .\templates\blog\tags\sidebar.html:65
 msgid "recent articles"
-msgstr "近期文章"
+msgstr "近期教学资源"
 
 #: .\templates\blog\tags\sidebar.html:77
 msgid "bookmark"
@@ -664,7 +653,7 @@ msgstr "快捷登录"
 
 #: .\templates\share_layout\nav.html:26
 msgid "Article archive"
-msgstr "文章归档"
+msgstr "教学资源归档"
 
 #: templates/blog/article_detail.html templates/blog/article_index.html
 msgid "Discover more"
