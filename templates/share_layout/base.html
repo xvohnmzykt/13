@@ -38,12 +38,23 @@
 
             function applyTheme(theme) {
                 const isDark = theme === 'dark';
+                const root = document.documentElement;
+                // 必须同时同步 <html> 和 <body>：darkMode.js 会把 data-theme 写在两者上。
+                // 若只改 <html>，切到浅色后 <body> 上残留的 data-theme="dark" 会让卡片等
+                // 子元素继续套用深色变量（表现为「背景变白了但卡片还是黑的」）。
                 if (isDark) {
-                    document.documentElement.setAttribute(THEME_ATTR, 'dark');
-                    document.documentElement.classList.add('dark');
+                    root.setAttribute(THEME_ATTR, 'dark');
+                    root.classList.add('dark');
                 } else {
-                    document.documentElement.removeAttribute(THEME_ATTR);
-                    document.documentElement.classList.remove('dark');
+                    root.removeAttribute(THEME_ATTR);
+                    root.classList.remove('dark');
+                }
+                if (document.body) {
+                    if (isDark) {
+                        document.body.setAttribute(THEME_ATTR, 'dark');
+                    } else {
+                        document.body.removeAttribute(THEME_ATTR);
+                    }
                 }
             }
 
@@ -160,6 +171,10 @@
         {% plugin_compressed_css %}
     {% endcompress %}
 
+    <!-- 用户头像 / 个人背景图样式 -->
+    {% load static %}
+    <link rel="stylesheet" href="{% static 'blog/css/user.css' %}">
+
     {% if GLOBAL_HEADER %}
         {{ GLOBAL_HEADER|safe }}
     {% endif %}
@@ -172,6 +187,7 @@
 
 <body data-color-scheme="{{ COLOR_SCHEME|default:'purple' }}"
       data-authenticated="{% if user.is_authenticated %}true{% else %}false{% endif %}"
+      {% if user.is_authenticated and user.background_url %}data-user-background style="--user-background: url('{{ user.background_url }}')"{% endif %}
       x-data="{ searchOpen: false }">
 <div id="page" class="hfeed site flex min-h-screen flex-col">
     {% load i18n %}

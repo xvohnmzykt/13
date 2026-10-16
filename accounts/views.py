@@ -16,10 +16,13 @@ from django.urls import reverse
 from django.utils.http import url_has_allowed_host_and_scheme
 from django.views import View
 
+from django.contrib.auth.mixins import LoginRequiredMixin
+from django.views.generic import UpdateView
+
 from teachingplatform.utils import send_email, get_sha256, get_current_site, generate_code, delete_sidebar_cache
 from teachingplatform.base_views import SecureFormView, LoginFormView, LogoutRedirectView
 from . import utils
-from .forms import RegisterForm, LoginForm, ForgetPasswordForm, ForgetPasswordCodeForm
+from .forms import RegisterForm, LoginForm, ForgetPasswordForm, ForgetPasswordCodeForm, ProfileForm
 from .models import BlogUser
 
 logger = logging.getLogger(__name__)
@@ -96,7 +99,11 @@ class LogoutView(LogoutRedirectView):
 
 class LoginView(LoginFormView):
     """
-    用户登录视图（重构版）
+    统一登录入口（前台 / 后台共用 /login/）
+
+    平台不区分「用户登录」和「管理员登录」两个页面，只在 /login/ 判断一次：
+    认证成功后读取数据库中的管理员标志（BlogUser.is_superuser），
+    是管理员则进入后台管理，否则回到前台。
 
     使用 LoginFormView 基类，自动提供：
     - 敏感参数保护（password）
@@ -108,11 +115,58 @@ class LoginView(LoginFormView):
     success_url = '/'
     redirect_field_name = REDIRECT_FIELD_NAME
 
+    # ---------- 落点决策 ----------
+
+    def _admin_index(self):
+        return reverse('admin:index')
+
+    def _is_safe_target(self, target):
+        """只接受指向本站的地址，避免被构造成开放重定向。"""
+        return bool(target) and url_has_allowed_host_and_scheme(
+            url=target,
+            allowed_hosts={self.request.get_host()},
+            require_https=self.request.is_secure())
+
+    def _is_admin_target(self, target):
+        return self._is_safe_target(target) and target.startswith(
+            self._admin_index())
+
+    def resolve_redirect(self, user, target):
+        """根据是否为管理员决定登录后的落点。
+
+        - 管理员：优先回到原本想访问的页面，否则进后台首页；
+        - 普通用户：优先回到原本想访问的前台页面，否则进首页。
+          指向后台的 next 会被丢弃，否则会被后台权限校验反复弹回登录页，
+          与登录页形成无限重定向。
+
+        空值或首页视为「未指定目标」，此时管理员进后台、普通用户进前台，
+        这正是「按数据库管理员标志分流」的默认行为。
+        """
+        admin_index = self._admin_index()
+        if not target or target == self.success_url:
+            return admin_index if user.is_platform_admin else self.success_url
+        if user.is_platform_admin:
+            return target if self._is_safe_target(target) else admin_index
+        if self._is_safe_target(target) and not self._is_admin_target(target):
+            return target
+        return self.success_url
+
+    # ---------- 视图 ----------
+
+    def get(self, request, *args, **kwargs):
+        # 已登录用户再访问登录页时，直接送往对应的大厅
+        if request.user.is_authenticated:
+            target = request.GET.get(self.redirect_field_name)
+            return HttpResponseRedirect(
+                self.resolve_redirect(request.user, target))
+        return super(LoginView, self).get(request, *args, **kwargs)
+
     def get_context_data(self, **kwargs):
-        redirect_to = self.request.GET.get(self.redirect_field_name)
-        if redirect_to is None:
-            redirect_to = '/'
+        redirect_to = self.request.GET.get(
+            self.redirect_field_name) or self.success_url
         kwargs['redirect_to'] = redirect_to
+        # 供模板切换文案：从后台被弹过来时提示管理员登录
+        kwargs['is_admin_login'] = self._is_admin_target(redirect_to)
 
         return super(LoginView, self).get_context_data(**kwargs)
 
@@ -150,13 +204,8 @@ class LoginView(LoginFormView):
             })
 
     def get_success_url(self):
-
-        redirect_to = self.request.POST.get(self.redirect_field_name)
-        if not url_has_allowed_host_and_scheme(
-                url=redirect_to, allowed_hosts=[
-                    self.request.get_host()]):
-            redirect_to = self.success_url
-        return redirect_to
+        target = self.request.POST.get(self.redirect_field_name)
+        return self.resolve_redirect(self.request.user, target)
 
 
 def account_result(request):
@@ -224,3 +273,29 @@ class ForgetPasswordEmailCode(View):
         utils.set_code(to_email, code)
 
         return HttpResponse("ok")
+
+
+class ProfileView(LoginRequiredMixin, UpdateView):
+    """个人资料页：修改昵称/邮箱，上传头像与个人背景图。
+
+    只允许操作 ``request.user`` 自己，避免通过改 URL 编辑别人的资料。
+    """
+
+    model = BlogUser
+    form_class = ProfileForm
+    template_name = 'account/profile.html'
+    login_url = '/login/'
+
+    def get_object(self, queryset=None):
+        return self.request.user
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context.setdefault('saved', False)
+        return context
+
+    def form_valid(self, form):
+        self.object = form.save()
+        # 保存成功后直接回到本页并给出提示（不依赖 messages 框架）
+        return self.render_to_response(
+            self.get_context_data(form=form, saved=True))

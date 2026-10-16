@@ -30,14 +30,29 @@ function getPreferredTheme() {
 
 /**
  * 应用主题
+ *
+ * <html> 与 <body> 必须同步：main.css 的深色令牌规则是 `.dark, [data-theme=dark]`，
+ * 若两者状态不一致（例如 html 已切浅色而 body 仍带 data-theme="dark"），
+ * body 上的规则会重新套用深色变量，导致"背景变白但卡片仍为黑色"。
  */
 function applyTheme(theme) {
-    if (theme === 'dark') {
-        document.documentElement.setAttribute(THEME_ATTR, 'dark');
-        document.body.setAttribute(THEME_ATTR, 'dark');
+    const root = document.documentElement;
+    const isDark = theme === 'dark';
+
+    if (isDark) {
+        root.setAttribute(THEME_ATTR, 'dark');
+        root.classList.add('dark');
     } else {
-        document.documentElement.removeAttribute(THEME_ATTR);
-        document.body.removeAttribute(THEME_ATTR);
+        root.removeAttribute(THEME_ATTR);
+        root.classList.remove('dark');
+    }
+
+    if (document.body) {
+        if (isDark) {
+            document.body.setAttribute(THEME_ATTR, 'dark');
+        } else {
+            document.body.removeAttribute(THEME_ATTR);
+        }
     }
 }
 

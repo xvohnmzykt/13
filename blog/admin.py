@@ -6,7 +6,7 @@ from django.utils.html import format_html
 from django.utils.translation import gettext_lazy as _
 
 # Register your models here.
-from .models import Article, Category, Tag, Links, SideBar, BlogSettings
+from .models import Article, Category, Tag, Links, SideBar, BlogSettings, NavItem
 
 
 class ArticleForm(forms.ModelForm):
@@ -59,7 +59,10 @@ class ArticlelAdmin(admin.ModelAdmin):
     filter_horizontal = ('tags',)
     exclude = ('creation_time', 'last_modify_time')
     view_on_site = True
+    # 注意：自定义 actions 会整体替换 Django 的默认动作列表，
+    # 必须显式写回 'delete_selected'，否则列表页就没有「删除所选」了。
     actions = [
+        'delete_selected',
         makr_article_publish,
         draft_article,
         close_article_commentstatus,
@@ -93,12 +96,12 @@ class ArticlelAdmin(admin.ModelAdmin):
 
 
 class TagAdmin(admin.ModelAdmin):
-    exclude = ('slug', 'last_mod_time', 'creation_time')
+    exclude = ('slug', 'last_modify_time', 'creation_time')
 
 
 class CategoryAdmin(admin.ModelAdmin):
     list_display = ('name', 'parent_category', 'index')
-    exclude = ('slug', 'last_mod_time', 'creation_time')
+    exclude = ('slug', 'last_modify_time', 'creation_time')
 
 
 class LinksAdmin(admin.ModelAdmin):
@@ -108,6 +111,46 @@ class LinksAdmin(admin.ModelAdmin):
 class SideBarAdmin(admin.ModelAdmin):
     list_display = ('name', 'content', 'is_enable', 'sequence')
     exclude = ('last_mod_time', 'creation_time')
+
+
+class NavItemAdmin(admin.ModelAdmin):
+    """前台顶部导航菜单的管理。
+
+    列表页可直接编辑「排序」「启用」，方便调整顺序与临时下线；
+    支持二级菜单（上级菜单），并可按链接类型指向首页 / 资源归档 / 课程分类 / 单页 / 自定义链接。
+    """
+
+    list_display = ('name', 'target_type', 'link_to_target',
+                    'parent', 'order', 'is_enable', 'open_in_new_tab')
+    list_display_links = ('name', 'target_type')
+    list_editable = ('order', 'is_enable')
+    list_filter = ('target_type', 'is_enable')
+    search_fields = ('name', 'url')
+    exclude = ('creation_time', 'last_modify_time')
+    ordering = ('order', 'id')
+    save_as = True
+
+    def link_to_target(self, obj):
+        """显示解析后的实际地址，方便核对。"""
+        url = obj.get_url()
+        return format_html('<a href="{}" target="_blank" rel="noopener">{}</a>', url, url)
+
+    link_to_target.short_description = '指向地址'
+
+    def save_model(self, request, obj, form, change):
+        super().save_model(request, obj, form, change)
+        from teachingplatform.utils import cache
+        cache.clear()
+
+    def delete_model(self, request, obj):
+        super().delete_model(request, obj)
+        from teachingplatform.utils import cache
+        cache.clear()
+
+    def delete_queryset(self, request, queryset):
+        super().delete_queryset(request, queryset)
+        from teachingplatform.utils import cache
+        cache.clear()
 
 
 class BlogSettingsAdmin(admin.ModelAdmin):

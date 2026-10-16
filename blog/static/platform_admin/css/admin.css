@@ -1,0 +1,875 @@
+/* ==========================================================================
+   在线教学资源平台 · 后台管理主题
+   --------------------------------------------------------------------------
+   目标：让 Django admin 的观感与前台首页 / 登录页保持一致。
+
+   做法分两层：
+     1. 覆盖 Django admin 的 CSS 自定义属性（配色、字体）——最安全的一层，
+        Django 所有组件都会跟着变；
+     2. 对少量结构做微调（圆角、边框、阴影、表单控件、编辑器），
+        对齐前台设计系统。
+
+   设计令牌来源：frontend/src/styles/main.css
+     --background / --foreground / --card / --border / --primary-500 ...
+
+   ⚠ 重要：Django 自己的变量是「颜色」而不是 RGB 三元组，
+     Django 内部会直接写 color: var(--body-quiet-color)。
+     因此这里赋给 --body-* / --border-* 等必须用 rgb(...) 完整颜色值；
+     只有本文件自己的 --pa-* 变量才用三元组（配合 rgb(var(--x) / <alpha>)）。
+
+   主题切换沿用 Django 自带的 light / dark / auto（html[data-theme]），
+   深色规则选择器权重必须高于浅色 `:root`，才能压过它。
+   ========================================================================== */
+
+/* --------------------------------------------------------------------------
+   1. 设计令牌
+   --------------------------------------------------------------------------
+   注意 `html:root` 这个多出来的选择器：Django 的 base.css 也用 `:root`
+   （权重 0,1,0）定义同名变量，仅靠"后加载"并不足以稳定压过它，
+   实测在部分浏览器/加载顺序下会被 base.css 反超。这里用 `html:root`
+   把权重提到 (0,1,1)，与下面的深色规则同级，靠书写顺序决定胜负。
+   -------------------------------------------------------------------------- */
+:root,
+html:root {
+    /* 前台主题色（紫色方案，与 COLOR_SCHEME 默认值一致），供带透明度的用法 */
+    --pa-primary-300: 216 180 254;
+    --pa-primary-400: 192 132 252;
+    --pa-primary-500: 168 85 247;
+    --pa-primary-600: 147 51 234;
+
+    /* 前台圆角与阴影 */
+    --pa-radius: 0.5rem;
+    --pa-radius-lg: 0.75rem;
+    /* 后台最大宽度：比前台 max-w-6xl(1152px) 略宽，给管理表格留出空间 */
+    --pa-content-max-width: 1400px;
+    --pa-shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.08), 0 1px 2px -1px rgb(0 0 0 / 0.08);
+    --pa-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.08), 0 2px 4px -2px rgb(0 0 0 / 0.08);
+
+    /* 字体：与前台 body 字体栈一致（含中文回退） */
+    --font-family-primary: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+        "Helvetica Neue", Arial, "PingFang SC", "Hiragino Sans GB",
+        "Microsoft YaHei", sans-serif;
+    --font-family-monospace: ui-monospace, SFMono-Regular, Menlo, Monaco,
+        Consolas, "Liberation Mono", "Courier New", monospace;
+
+    /* ---- Django admin：浅色（对齐前台 :root） ---- */
+    --primary: rgb(var(--pa-primary-500));
+    --primary-fg: #ffffff;
+    --secondary: rgb(var(--pa-primary-600));
+    --accent: rgb(var(--pa-primary-400));
+
+    --body-fg: rgb(17 24 39);
+    --body-bg: rgb(249 250 251);
+    --body-quiet-color: rgb(107 114 128);
+    --body-medium-color: rgb(55 65 81);
+    --body-loud-color: rgb(17 24 39);
+
+    --header-color: rgb(17 24 39);
+    --header-branding-color: rgb(17 24 39);
+    --header-bg: rgb(255 255 255);
+    --header-link-color: rgb(71 85 105);
+
+    --breadcrumbs-fg: rgb(107 114 128);
+    --breadcrumbs-link-fg: rgb(var(--pa-primary-600));
+    --breadcrumbs-bg: rgb(243 244 246);
+
+    --link-fg: rgb(var(--pa-primary-600));
+    --link-hover-color: rgb(var(--pa-primary-500));
+    --link-selected-fg: rgb(var(--pa-primary-600));
+
+    --hairline-color: rgb(229 231 235);
+    --border-color: rgb(229 231 235);
+
+    --error-fg: rgb(220 38 38);
+
+    --message-success-bg: rgb(220 252 231);
+    --message-warning-bg: rgb(254 249 195);
+    --message-error-bg: rgb(254 226 226);
+
+    --darkened-bg: rgb(243 244 246);
+    --selected-bg: rgb(243 232 255);
+    --selected-row: rgb(250 245 255);
+
+    --button-fg: #ffffff;
+    --button-bg: rgb(var(--pa-primary-500));
+    --button-hover-bg: rgb(var(--pa-primary-600));
+    --default-button-bg: rgb(var(--pa-primary-600));
+    --default-button-hover-bg: rgb(var(--pa-primary-500));
+    --close-button-bg: rgb(100 116 139);
+    --close-button-hover-bg: rgb(71 85 105);
+    --delete-button-bg: rgb(220 38 38);
+    --delete-button-hover-bg: rgb(185 28 28);
+
+    --object-tools-fg: #ffffff;
+    --object-tools-bg: rgb(var(--pa-primary-500));
+    --object-tools-hover-bg: rgb(var(--pa-primary-600));
+
+    color-scheme: light;
+}
+
+/* ---- Django admin：深色（对齐前台 [data-theme="dark"]） ---- */
+html[data-theme="dark"] {
+    --primary: rgb(var(--pa-primary-500));
+    --primary-fg: #ffffff;
+    --secondary: rgb(var(--pa-primary-600));
+    --accent: rgb(var(--pa-primary-400));
+
+    --body-fg: rgb(226 232 240);
+    --body-bg: rgb(15 23 42);
+    --body-quiet-color: rgb(148 163 184);
+    --body-medium-color: rgb(203 213 225);
+    --body-loud-color: rgb(241 245 249);
+
+    --header-color: rgb(226 232 240);
+    --header-branding-color: rgb(241 245 249);
+    --header-bg: rgb(15 23 42);
+    --header-link-color: rgb(148 163 184);
+
+    --breadcrumbs-fg: rgb(148 163 184);
+    --breadcrumbs-link-fg: rgb(var(--pa-primary-400));
+    --breadcrumbs-bg: rgb(30 41 59);
+
+    --link-fg: rgb(var(--pa-primary-400));
+    --link-hover-color: rgb(var(--pa-primary-300));
+    --link-selected-fg: rgb(var(--pa-primary-400));
+
+    --hairline-color: rgb(51 65 85);
+    --border-color: rgb(51 65 85);
+
+    --error-fg: rgb(248 113 113);
+
+    --message-success-bg: rgb(6 78 59);
+    --message-warning-bg: rgb(120 53 15);
+    --message-error-bg: rgb(127 29 29);
+
+    --darkened-bg: rgb(30 41 59);
+    --selected-bg: rgb(51 65 85);
+    --selected-row: rgb(49 46 129);
+
+    --button-fg: #ffffff;
+    --button-bg: rgb(var(--pa-primary-500));
+    --button-hover-bg: rgb(var(--pa-primary-600));
+    --default-button-bg: rgb(var(--pa-primary-600));
+    --default-button-hover-bg: rgb(var(--pa-primary-500));
+    --close-button-bg: rgb(51 65 85);
+    --close-button-hover-bg: rgb(71 85 105);
+    --delete-button-bg: rgb(220 38 38);
+    --delete-button-hover-bg: rgb(185 28 28);
+
+    --object-tools-fg: #ffffff;
+    --object-tools-bg: rgb(var(--pa-primary-500));
+    --object-tools-hover-bg: rgb(var(--pa-primary-600));
+
+    --pa-shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.3);
+    --pa-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.35), 0 2px 4px -2px rgb(0 0 0 / 0.35);
+
+    color-scheme: dark;
+}
+
+/* 跟随系统：data-theme="auto" 且系统为深色时套用同一组深色令牌。
+   选择器比 `:root` 多一个属性，权重更高，可压过上面的浅色规则。 */
+@media (prefers-color-scheme: dark) {
+    html[data-theme="auto"] {
+        --primary: rgb(var(--pa-primary-500));
+        --primary-fg: #ffffff;
+        --secondary: rgb(var(--pa-primary-600));
+        --accent: rgb(var(--pa-primary-400));
+
+        --body-fg: rgb(226 232 240);
+        --body-bg: rgb(15 23 42);
+        --body-quiet-color: rgb(148 163 184);
+        --body-medium-color: rgb(203 213 225);
+        --body-loud-color: rgb(241 245 249);
+
+        --header-color: rgb(226 232 240);
+        --header-branding-color: rgb(241 245 249);
+        --header-bg: rgb(15 23 42);
+        --header-link-color: rgb(148 163 184);
+
+        --breadcrumbs-fg: rgb(148 163 184);
+        --breadcrumbs-link-fg: rgb(var(--pa-primary-400));
+        --breadcrumbs-bg: rgb(30 41 59);
+
+        --link-fg: rgb(var(--pa-primary-400));
+        --link-hover-color: rgb(var(--pa-primary-300));
+        --link-selected-fg: rgb(var(--pa-primary-400));
+
+        --hairline-color: rgb(51 65 85);
+        --border-color: rgb(51 65 85);
+
+        --error-fg: rgb(248 113 113);
+
+        --message-success-bg: rgb(6 78 59);
+        --message-warning-bg: rgb(120 53 15);
+        --message-error-bg: rgb(127 29 29);
+
+        --darkened-bg: rgb(30 41 59);
+        --selected-bg: rgb(51 65 85);
+        --selected-row: rgb(49 46 129);
+
+        --button-fg: #ffffff;
+        --button-bg: rgb(var(--pa-primary-500));
+        --button-hover-bg: rgb(var(--pa-primary-600));
+        --default-button-bg: rgb(var(--pa-primary-600));
+        --default-button-hover-bg: rgb(var(--pa-primary-500));
+        --close-button-bg: rgb(51 65 85);
+        --close-button-hover-bg: rgb(71 85 105);
+        --delete-button-bg: rgb(220 38 38);
+        --delete-button-hover-bg: rgb(185 28 28);
+
+        --object-tools-fg: #ffffff;
+        --object-tools-bg: rgb(var(--pa-primary-500));
+        --object-tools-hover-bg: rgb(var(--pa-primary-600));
+
+        --pa-shadow-sm: 0 1px 3px 0 rgb(0 0 0 / 0.3), 0 1px 2px -1px rgb(0 0 0 / 0.3);
+        --pa-shadow-md: 0 4px 6px -1px rgb(0 0 0 / 0.35), 0 2px 4px -2px rgb(0 0 0 / 0.35);
+
+        color-scheme: dark;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   2. 全局
+   -------------------------------------------------------------------------- */
+body {
+    background: var(--body-bg);
+    color: var(--body-fg);
+    font-family: var(--font-family-primary);
+    -webkit-font-smoothing: antialiased;
+}
+
+/* --------------------------------------------------------------------------
+   3. 顶栏：对齐前台"吸顶 + 细下边框"的观感
+   -------------------------------------------------------------------------- */
+#header {
+    background: var(--header-bg);
+    color: var(--header-color);
+    border-bottom: 1px solid var(--border-color);
+    box-shadow: none;
+    padding: 14px 32px;
+}
+
+#branding {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+#branding h1 {
+    font-size: 1.125rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    margin: 0;
+}
+
+#branding h1,
+#branding h1 a:link,
+#branding h1 a:visited {
+    color: var(--header-branding-color);
+}
+
+#branding h1 a:hover {
+    color: rgb(var(--pa-primary-400));
+}
+
+/* 品牌区里"返回前台"的小链接 */
+#branding .pa-site-link {
+    font-size: 12px;
+    font-weight: 500;
+    padding: 2px 10px;
+    border: 1px solid var(--border-color);
+    border-radius: 999px;
+    color: var(--body-quiet-color);
+    text-decoration: none;
+    transition: color 0.15s, border-color 0.15s;
+}
+
+#branding .pa-site-link:hover {
+    color: rgb(var(--pa-primary-400));
+    border-color: rgb(var(--pa-primary-400));
+}
+
+#user-tools {
+    font-size: 12px;
+    color: var(--body-quiet-color);
+}
+
+#user-tools a,
+#user-tools button {
+    color: var(--header-link-color);
+    border-bottom: none;
+    font-weight: 500;
+}
+
+#user-tools a:hover,
+#user-tools button:hover {
+    color: rgb(var(--pa-primary-400));
+}
+
+#user-tools strong {
+    color: var(--header-color);
+}
+
+/* --------------------------------------------------------------------------
+   4. 面包屑
+   -------------------------------------------------------------------------- */
+div.breadcrumbs {
+    background: var(--breadcrumbs-bg);
+    color: var(--breadcrumbs-fg);
+    border-bottom: 1px solid var(--border-color);
+    padding: 10px 32px;
+    font-size: 12px;
+}
+
+div.breadcrumbs a {
+    color: var(--breadcrumbs-link-fg);
+}
+
+div.breadcrumbs a:hover {
+    color: rgb(var(--pa-primary-400));
+}
+
+/* --------------------------------------------------------------------------
+   5. 内容区与卡片
+   --------------------------------------------------------------------------
+   Django 的 #container 是 width:100% + min-width:980px，没有上限，
+   在宽屏上整个后台会铺满窗口。
+   这里给 #container 一个最大宽度并水平居中（与前台 max-w-6xl mx-auto 同一思路），
+   而不是只限制 #content —— 因为 main.content 是 flex 容器，#content 作为 flex item
+   会被收缩成内容宽度，Django 仪表盘里 #content-main / #content-related 的浮动
+   会跑到它外面去。居中 #container 可以让 Django 原有的浮动布局照常工作。
+   -------------------------------------------------------------------------- */
+#container {
+    width: 100%;
+    max-width: var(--pa-content-max-width);
+    margin-inline: auto;
+}
+
+#content {
+    box-sizing: border-box;
+    padding: 24px 32px;
+    /* 父级链路（#main → main.content）是 flex 布局，#content 在这里会被收缩成
+       内容宽度（实测约 600px），必须显式给宽度才能铺满居中容器。 */
+    width: 100%;
+    min-width: 100%;
+    max-width: 100%;
+    flex: 1 1 auto;
+}
+
+/* 仪表盘两栏排布
+   Django 的原设计是「#content-main 浮动占满 + #content-related 用负边距浮到内容列
+   右侧」，配合 .colMS 的 300px 右边距。在居中且有最大宽度的容器里这套技巧会让
+   右栏溢出到容器外。这里改用 flex 换行布局重排：
+   标题独立一行，主区自适应 + 右栏固定宽度排在下一行。 */
+#content:has(> #content-related) {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: flex-start;
+    gap: 24px;
+    margin-right: 0;
+}
+
+/* 页面标题必须独占一行，否则会与两栏并排、把主区挤到右侧 */
+#content:has(> #content-related) > h1 {
+    flex: 0 0 100%;
+    margin-bottom: 0;
+}
+
+/* Django 用来清除浮动的 <br>，在 flex 布局里没有意义 */
+#content:has(> #content-related) > br.clear {
+    display: none;
+}
+
+#content > #content-main {
+    float: none;
+    width: auto;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+
+#content > #content-related {
+    float: none;
+    flex: 0 0 280px;
+    width: 280px;
+    margin-right: 0;
+}
+
+#content h1 {
+    font-size: 1.375rem;
+    font-weight: 700;
+    letter-spacing: -0.01em;
+    color: var(--body-loud-color);
+    margin: 0 0 18px;
+}
+
+/* 每个 module 视作一张卡片 */
+.module,
+.inline-group {
+    background: var(--header-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--pa-radius-lg);
+    box-shadow: var(--pa-shadow-sm);
+    overflow: hidden;
+    margin-bottom: 20px;
+}
+
+.module h2,
+.module caption,
+.inline-group h2 {
+    background: var(--darkened-bg);
+    color: var(--body-loud-color);
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: 0.01em;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.module h2 a,
+.module caption a {
+    color: var(--body-loud-color);
+}
+
+.module table {
+    border-collapse: collapse;
+}
+
+/* --------------------------------------------------------------------------
+   6. 按钮
+   -------------------------------------------------------------------------- */
+.button,
+input[type="submit"],
+input[type="button"],
+.submit-row input,
+button {
+    border-radius: var(--pa-radius);
+    font-family: var(--font-family-primary);
+    font-weight: 500;
+    font-size: 13px;
+    padding: 8px 16px;
+    border: 1px solid transparent;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.button,
+input[type="submit"],
+input[type="button"],
+.submit-row input {
+    background: var(--button-bg);
+    color: var(--button-fg);
+}
+
+.button:hover,
+input[type="submit"]:hover,
+input[type="button"]:hover,
+.submit-row input:hover {
+    background: var(--button-hover-bg);
+}
+
+.button.default,
+input[type="submit"].default,
+.submit-row input.default {
+    background: var(--default-button-bg);
+}
+
+.button.default:hover,
+input[type="submit"].default:hover,
+.submit-row input.default:hover {
+    background: var(--default-button-hover-bg);
+}
+
+/* 次要按钮：描边风格，和前台"取消/次要"按钮一致 */
+.button:not(.default),
+a.button:not(.default) {
+    border-color: var(--border-color);
+}
+
+/* "增加/修改"这类 object-tools 按钮 */
+.object-tools a,
+.object-tools a:link,
+.object-tools a:visited {
+    background: var(--object-tools-bg);
+    color: var(--object-tools-fg);
+    border-radius: 999px;
+    font-size: 12px;
+    font-weight: 500;
+    padding: 6px 14px;
+    text-transform: none;
+    letter-spacing: 0;
+}
+
+.object-tools a:hover,
+.object-tools a:focus {
+    background: var(--object-tools-hover-bg);
+}
+
+/* 提交行 */
+.submit-row {
+    background: var(--header-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--pa-radius-lg);
+    padding: 12px 16px;
+}
+
+/* --------------------------------------------------------------------------
+   7. 表单控件
+   -------------------------------------------------------------------------- */
+input[type="text"],
+input[type="password"],
+input[type="email"],
+input[type="url"],
+input[type="number"],
+input[type="search"],
+input[type="tel"],
+textarea,
+select,
+.vTextField {
+    background: var(--body-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--pa-radius);
+    color: var(--body-fg);
+    padding: 8px 12px;
+    font-family: var(--font-family-primary);
+    font-size: 13px;
+    transition: border-color 0.15s, box-shadow 0.15s;
+}
+
+input[type="text"]:focus,
+input[type="password"]:focus,
+input[type="email"]:focus,
+input[type="url"]:focus,
+input[type="number"]:focus,
+input[type="search"]:focus,
+input[type="tel"]:focus,
+textarea:focus,
+select:focus,
+.vTextField:focus {
+    border-color: rgb(var(--pa-primary-500));
+    box-shadow: 0 0 0 3px rgb(var(--pa-primary-500) / 0.2);
+    outline: none;
+}
+
+/* 只读字段 */
+.readonly {
+    background: var(--darkened-bg);
+    border-radius: var(--pa-radius);
+    padding: 8px 12px;
+}
+
+/* 帮助文本 */
+.help,
+.form-row .help,
+p.help {
+    font-size: 12px;
+    color: var(--body-quiet-color);
+}
+
+/* fieldset 内的行分隔 */
+.form-row {
+    border-bottom: 1px solid var(--hairline-color);
+}
+
+/* --------------------------------------------------------------------------
+   8. 列表页（changelist）
+   -------------------------------------------------------------------------- */
+#changelist {
+    background: transparent;
+}
+
+#changelist table thead th {
+    background: var(--darkened-bg);
+    color: var(--body-medium-color);
+    font-size: 12px;
+    font-weight: 600;
+    border-bottom: 1px solid var(--border-color);
+    padding: 9px 10px;
+}
+
+#changelist table tbody td,
+#changelist table tbody th {
+    border-bottom: 1px solid var(--hairline-color);
+    padding: 9px 10px;
+    font-size: 13px;
+}
+
+/* 列表列较多时，禁止单元格内文字逐字竖排；表格过宽则整体横向滚动 */
+#changelist .results {
+    overflow-x: auto;
+}
+
+#changelist table thead th,
+#changelist table tbody td,
+#changelist table tbody th {
+    white-space: nowrap;
+}
+
+/* 第一列是资源标题，允许换行，避免长标题把表格撑得过宽 */
+#changelist table tbody th.field-__str__ {
+    white-space: normal;
+    min-width: 12em;
+}
+
+#changelist table tbody tr:hover {
+    background: var(--darkened-bg);
+}
+
+#changelist table tbody tr.selected {
+    background: var(--selected-bg);
+}
+
+/* 操作条 */
+.actions {
+    background: var(--darkened-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--pa-radius);
+    padding: 8px 12px;
+}
+
+.actions select {
+    min-width: 180px;
+}
+
+/* 分页 */
+.paginator {
+    background: transparent;
+    border-top: 1px solid var(--border-color);
+    color: var(--body-quiet-color);
+    font-size: 12px;
+    padding: 12px 0;
+}
+
+/* 过滤器侧栏 */
+#changelist-filter {
+    background: var(--header-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--pa-radius-lg);
+    overflow: hidden;
+}
+
+#changelist-filter h2 {
+    background: var(--darkened-bg);
+    color: var(--body-loud-color);
+    font-size: 12px;
+    font-weight: 600;
+    padding: 10px 14px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+#changelist-filter h3 {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--body-medium-color);
+    padding: 10px 14px 4px;
+}
+
+#changelist-filter li.selected a {
+    color: rgb(var(--pa-primary-400));
+    font-weight: 600;
+}
+
+/* --------------------------------------------------------------------------
+   9. 左侧导航（nav sidebar）
+   -------------------------------------------------------------------------- */
+#nav-sidebar {
+    background: var(--header-bg);
+    border-right: 1px solid var(--border-color);
+}
+
+#nav-sidebar .current-app .section:link,
+#nav-sidebar .current-app .section:visited {
+    color: rgb(var(--pa-primary-400));
+    font-weight: 600;
+}
+
+#nav-sidebar .current-model {
+    background: var(--selected-bg);
+}
+
+#nav-sidebar a {
+    border-radius: var(--pa-radius);
+}
+
+.toggle-nav-sidebar {
+    background: var(--darkened-bg);
+    border-right: 1px solid var(--border-color);
+    color: var(--body-quiet-color);
+}
+
+/* --------------------------------------------------------------------------
+   10. 消息提示
+   -------------------------------------------------------------------------- */
+.messagelist li {
+    border-radius: var(--pa-radius);
+    font-size: 13px;
+    padding: 10px 16px;
+    border: 1px solid var(--border-color);
+}
+
+.messagelist li.success {
+    background: var(--message-success-bg);
+}
+
+.messagelist li.warning {
+    background: var(--message-warning-bg);
+}
+
+.messagelist li.error {
+    background: var(--message-error-bg);
+}
+
+/* --------------------------------------------------------------------------
+   11. 登录 / 登出 / 修改密码页
+   -------------------------------------------------------------------------- */
+.login #container {
+    background: var(--header-bg);
+    border: 1px solid var(--border-color);
+    border-radius: var(--pa-radius-lg);
+    box-shadow: var(--pa-shadow-md);
+    overflow: hidden;
+}
+
+.login #header {
+    border-bottom: 1px solid var(--border-color);
+}
+
+.login .form-row {
+    border-bottom: none;
+}
+
+.login .submit-row {
+    background: transparent;
+    border: none;
+}
+
+.login .submit-row input {
+    width: 100%;
+}
+
+/* --------------------------------------------------------------------------
+   12. 页脚
+   -------------------------------------------------------------------------- */
+#footer {
+    color: var(--body-quiet-color);
+    font-size: 12px;
+    padding: 16px 32px;
+    border-top: 1px solid var(--border-color);
+}
+
+/* 无障碍：保留 Django 的跳过链接 */
+.skip-to-content-link:focus {
+    border-radius: var(--pa-radius);
+}
+
+/* --------------------------------------------------------------------------
+   13. Markdown 编辑器（django-mdeditor / editor.md）
+   --------------------------------------------------------------------------
+   该编辑器由 JavaScript 构建 DOM 并自带浅色主题，其样式表也在本文件之后加载，
+   因此这里的覆盖统一带 !important。
+   涉及的容器类：.editormd / .editormd-toolbar / .CodeMirror / .editormd-preview。
+   -------------------------------------------------------------------------- */
+.form-row .editormd {
+    border: 1px solid var(--border-color) !important;
+    border-radius: var(--pa-radius) !important;
+    background: var(--header-bg);
+    overflow: hidden;
+}
+
+/* 工具栏 */
+.form-row .editormd-toolbar-container,
+.form-row .editormd-toolbar {
+    background: var(--darkened-bg) !important;
+    border-color: var(--border-color) !important;
+}
+
+.form-row .editormd-toolbar a,
+.form-row .editormd-menu a {
+    color: var(--body-medium-color) !important;
+    border-color: transparent !important;
+}
+
+.form-row .editormd-toolbar a:hover,
+.form-row .editormd-menu a:hover,
+.form-row .editormd-toolbar a.active {
+    background: var(--selected-bg) !important;
+    color: var(--body-loud-color) !important;
+}
+
+.form-row .editormd-menu {
+    background: var(--header-bg) !important;
+    border-color: var(--border-color) !important;
+}
+
+.form-row .editormd-menu > li.divider {
+    border-color: var(--border-color) !important;
+}
+
+/* 源码编辑区 */
+.form-row .CodeMirror {
+    background: var(--header-bg) !important;
+    color: var(--body-fg) !important;
+    border-color: var(--border-color) !important;
+}
+
+.form-row .CodeMirror-gutters {
+    background: var(--darkened-bg) !important;
+    border-right-color: var(--border-color) !important;
+}
+
+.form-row .CodeMirror-linenumber,
+.form-row .CodeMirror-foldgutter {
+    color: var(--body-quiet-color) !important;
+}
+
+.form-row .CodeMirror-cursor {
+    border-left-color: var(--body-fg) !important;
+}
+
+.form-row .CodeMirror-selected,
+.form-row .CodeMirror-focused .CodeMirror-selected {
+    background: var(--selected-bg) !important;
+}
+
+.form-row .CodeMirror-activeline-background {
+    background: var(--darkened-bg) !important;
+}
+
+/* 右侧预览区 */
+.form-row .editormd-preview-container {
+    background: var(--header-bg) !important;
+    color: var(--body-fg) !important;
+    border-color: var(--border-color) !important;
+}
+
+/* 预览区标题被编辑器注入的内联样式强制成白底黑字，这里用更高权重改回来 */
+.form-row .wmd-wrapper h1,
+.form-row .wmd-wrapper h2,
+.form-row .wmd-wrapper h3,
+.form-row .wmd-wrapper h4,
+.form-row .wmd-wrapper h5,
+.form-row .wmd-wrapper h6 {
+    background: transparent !important;
+    color: var(--body-loud-color) !important;
+}
+
+.form-row .editormd-preview-container a {
+    color: rgb(var(--pa-primary-400)) !important;
+}
+
+.form-row .editormd-preview-container code,
+.form-row .editormd-preview-container pre {
+    background: var(--darkened-bg) !important;
+    color: var(--body-loud-color) !important;
+    border-color: var(--border-color) !important;
+}
+
+.form-row .editormd-preview-container blockquote {
+    background: var(--darkened-bg) !important;
+    border-left-color: rgb(var(--pa-primary-500)) !important;
+    color: var(--body-medium-color) !important;
+}
+
+.form-row .editormd-preview-container table th,
+.form-row .editormd-preview-container table td {
+    border-color: var(--border-color) !important;
+}

@@ -62,8 +62,19 @@ TESTING = len(sys.argv) > 1 and sys.argv[1] == 'test'
 
 # ALLOWED_HOSTS = []
 ALLOWED_HOSTS = ['*', '127.0.0.1', 'example.com']
-# django 4.0新增配置
-CSRF_TRUSTED_ORIGINS = ['http://example.com']
+# django 4.0 新增配置：CSRF 可信来源（逗号分隔，可用环境变量覆盖）。
+# 本地开发常用的 127.0.0.1 / localhost 一并放行，避免换用主机名时 CSRF 校验失败。
+CSRF_TRUSTED_ORIGINS = [
+    origin.strip()
+    for origin in (
+        os.environ.get('DJANGO_CSRF_TRUSTED_ORIGINS')
+        or 'http://127.0.0.1:8000,http://localhost:8000,http://example.com'
+    ).split(',')
+    if origin.strip()
+]
+# CSRF 校验失败时使用平台自己的友好提示页，而不是 Django 的调试说明页。
+# 登录 / 登出会轮换 CSRF token，提交旧登录表单时就会触发这里。
+CSRF_FAILURE_VIEW = 'teachingplatform.error_views.csrf_failure_view'
 # Application definition
 
 

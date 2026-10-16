@@ -1,7 +1,11 @@
+from urllib.parse import quote
+
 from django.contrib.admin import AdminSite
 from django.contrib.admin.models import LogEntry
 from django.contrib.sites.admin import SiteAdmin
 from django.contrib.sites.models import Site
+from django.http import HttpResponseRedirect
+from django.urls import reverse
 
 from accounts.admin import *
 from blog.admin import *
@@ -24,7 +28,20 @@ class TeachingPlatformAdminSite(AdminSite):
         super().__init__(name)
 
     def has_permission(self, request):
-        return request.user.is_superuser
+        # 准入依据与统一登录入口保持一致：数据库字段 is_superuser
+        return bool(getattr(request.user, 'is_platform_admin', False))
+
+    def login(self, request, extra_context=None):
+        """后台不再单独提供登录页，统一跳转到 /login/。
+
+        前台登录页认证成功后会依据数据库中的管理员标志决定是否回到后台，
+        所以这里把原始目标地址（next）带过去即可。
+        """
+        login_url = reverse('account:login')
+        target = (request.POST.get('next') or request.GET.get('next')
+                  or reverse('admin:index'))
+        return HttpResponseRedirect(
+            '{}?next={}'.format(login_url, quote(target, safe='')))
 
     # def get_urls(self):
     #     urls = super().get_urls()
@@ -44,6 +61,7 @@ admin_site.register(Category, CategoryAdmin)
 admin_site.register(Tag, TagAdmin)
 admin_site.register(Links, LinksAdmin)
 admin_site.register(SideBar, SideBarAdmin)
+admin_site.register(NavItem, NavItemAdmin)
 admin_site.register(BlogSettings, BlogSettingsAdmin)
 
 admin_site.register(commands, CommandsAdmin)

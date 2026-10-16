@@ -137,3 +137,31 @@ def bad_request_view(request, exception, template_name='blog/error_page.html'):
         _('Sorry, the request was invalid?'),
         exception
     )
+
+
+def csrf_failure_view(request, reason=''):
+    """CSRF 校验失败时的友好提示页。
+
+    Django 自带的失败页在 DEBUG=True 时会输出一大段机制说明，对普通用户没有意义。
+    这里统一渲染成平台自身的错误页，并提示最可能的原因与处理办法：
+    登录 / 登出会轮换 CSRF token，提交登录前渲染的旧页面（旧标签页、浏览器后退）
+    就会得到 "CSRF token from POST incorrect"。
+    """
+    logger.warning('CSRF failure on %s: %s', request.path, reason)
+
+    response = render(
+        request,
+        'blog/error_page.html',
+        {
+            'message': '页面已过期，请重新登录',
+            'hint': '为保证安全，登录或登出后表单校验令牌会更换。'
+                    '浏览器后退、或停留在旧标签页中的登录表单已经失效，'
+                    '请点下面的按钮重新打开登录页。',
+            'statuscode': '403',
+            'show_login_link': True,
+        },
+        status=403
+    )
+    # 让浏览器不要复用这份已失效的页面，避免再次提交同样的旧表单
+    response['Cache-Control'] = 'no-store, no-cache, must-revalidate, private'
+    return response

@@ -154,12 +154,15 @@
             功能
         </h3>
         <ul class="m-0 flex flex-col gap-0.5 p-0 list-none">
+            {# 管理站点仅对管理员显示：是否为管理员取自数据库字段 is_superuser #}
+            {% if user.is_platform_admin %}
             <li>
-                <a href="/admin/" rel="nofollow" hx-boost="false"
+                <a href="{% url 'admin:index' %}" rel="nofollow" hx-boost="false"
                    class="block rounded-lg px-3 py-2 text-sm text-foreground transition-colors hover:bg-secondary hover:text-primary">
                     {% trans 'management site' %}
                 </a>
             </li>
+            {% endif %}
             {% if user.is_authenticated %}
                 <li>
                     <a href="{% url 'account:logout' %}" rel="nofollow" hx-boost="false"

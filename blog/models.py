@@ -403,3 +403,97 @@ class BlogSettings(models.Model):
         super().save(*args, **kwargs)
         from teachingplatform.utils import cache
         cache.clear()
+
+
+class NavItem(BaseModel):
+    """前台顶部导航菜单项。
+
+    让管理员可以在后台增删改查导航：名称、链接类型、排序、是否启用、是否新窗口打开，
+    并通过 parent 建立二级下拉菜单。这里字段的中文名直接用字符串（不走 gettext），
+    这样后台无需额外的 .po 词条即可显示中文。
+    """
+
+    TARGET_INDEX = 'index'
+    TARGET_ARCHIVES = 'archives'
+    TARGET_CATEGORIES = 'categories'
+    TARGET_CATEGORY = 'category'
+    TARGET_PAGE = 'page'
+    TARGET_CUSTOM = 'custom'
+
+    TARGET_CHOICES = (
+        (TARGET_INDEX, '首页'),
+        (TARGET_CATEGORIES, '全部分类'),
+        (TARGET_ARCHIVES, '资源归档'),
+        (TARGET_CATEGORY, '课程分类'),
+        (TARGET_PAGE, '单页'),
+        (TARGET_CUSTOM, '自定义链接'),
+    )
+
+    name = models.CharField('名称', max_length=50)
+    target_type = models.CharField(
+        '链接类型',
+        max_length=20,
+        choices=TARGET_CHOICES,
+        default=TARGET_CUSTOM,
+        help_text='选择「课程分类」或「单页」时，在下方指定具体对象')
+    url = models.CharField(
+        '自定义链接',
+        max_length=300,
+        blank=True,
+        default='',
+        help_text='站内路径以 / 开头（如 /links.html）；外链请写完整地址')
+    category = models.ForeignKey(
+        'Category',
+        verbose_name='课程分类',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        help_text='链接类型选「课程分类」时使用')
+    page = models.ForeignKey(
+        'Article',
+        verbose_name='单页',
+        null=True,
+        blank=True,
+        on_delete=models.SET_NULL,
+        limit_choices_to={'type': 'p'},
+        help_text='链接类型选「单页」时使用')
+    parent = models.ForeignKey(
+        'self',
+        verbose_name='上级菜单',
+        null=True,
+        blank=True,
+        on_delete=models.CASCADE,
+        related_name='children',
+        help_text='选择后本项会变成该菜单的下拉子项')
+    order = models.IntegerField('排序', default=0, help_text='数值越小越靠前')
+    is_enable = models.BooleanField('启用', default=True)
+    open_in_new_tab = models.BooleanField('新窗口打开', default=False)
+
+    class Meta:
+        ordering = ['order', 'id']
+        verbose_name = '导航菜单'
+        verbose_name_plural = verbose_name
+
+    def __str__(self):
+        return self.name
+
+    def get_url(self):
+        """返回该菜单项最终指向的地址。"""
+        if self.target_type == self.TARGET_INDEX:
+            return reverse('blog:index')
+        if self.target_type == self.TARGET_ARCHIVES:
+            return reverse('blog:archives')
+        if self.target_type == self.TARGET_CATEGORIES:
+            # 「全部分类」是一个自动展开的下拉，这里给出第一个分类的地址便于后台预览
+            first = Category.objects.filter(parent_category__isnull=True).first()
+            return first.get_absolute_url() if first else reverse('blog:index')
+        if self.target_type == self.TARGET_CATEGORY and self.category_id:
+            return self.category.get_absolute_url()
+        if self.target_type == self.TARGET_PAGE and self.page_id:
+            return self.page.get_absolute_url()
+        return self.url or '/'
+
+    @property
+    def enabled_children(self):
+        """启用的子菜单，用于渲染下拉。"""
+        return [item for item in self.children.all() if item.is_enable]

@@ -115,3 +115,69 @@ class ForgetPasswordCodeForm(forms.Form):
     email = forms.EmailField(
         label=_('Email'),
     )
+
+
+class ChineseClearableFileInput(forms.ClearableFileInput):
+    """带中文提示的「可清除」文件控件。"""
+    initial_text = '当前文件'
+    input_text = '更换为'
+    clear_checkbox_label = '清除'
+
+
+class ProfileForm(forms.ModelForm):
+    """个人资料：修改昵称/邮箱，并上传头像与个人背景图。
+
+    头像保存到 ``user/<账号>/avatar/``，背景图保存到 ``user/<账号>/Background/``，
+    路径由 BlogUser 上的 upload_to 决定，数据库只存相对 MEDIA_ROOT 的路径。
+    """
+
+    MAX_AVATAR_MB = 5
+    MAX_BACKGROUND_MB = 10
+    IMAGE_TYPES = ('.jpg', '.jpeg', '.png', '.gif', '.webp', '.bmp')
+
+    class Meta:
+        model = BlogUser
+        fields = ('nickname', 'email', 'avatar', 'background')
+        labels = {
+            'nickname': '昵称',
+            'email': '邮箱',
+            'avatar': '头像',
+            'background': '个人背景图',
+        }
+        widgets = {
+            'nickname': widgets.TextInput(attrs={'placeholder': '留空则显示用户名'}),
+            'email': widgets.EmailInput(attrs={'placeholder': '用于找回密码'}),
+            'avatar': ChineseClearableFileInput(attrs={
+                'class': 'upload-input', 'accept': 'image/*'}),
+            'background': ChineseClearableFileInput(attrs={
+                'class': 'upload-input', 'accept': 'image/*'}),
+        }
+
+    def clean_email(self):
+        email = self.cleaned_data.get('email')
+        if email:
+            taken = BlogUser.objects.filter(email=email).exclude(pk=self.instance.pk)
+            if taken.exists():
+                raise ValidationError('该邮箱已被其他账号使用')
+        return email
+
+    def _validate_image(self, image, max_mb, label):
+        if not image:
+            return image
+        # 已存在的文件（FileField 回填）没有 size，跳过校验
+        size = getattr(image, 'size', None)
+        if size and size > max_mb * 1024 * 1024:
+            raise ValidationError('{}不能超过 {} MB'.format(label, max_mb))
+        name = getattr(image, 'name', '') or ''
+        if '.' in name and not name.lower().endswith(self.IMAGE_TYPES):
+            raise ValidationError('{}只支持图片格式：{}'.format(
+                label, '、'.join(self.IMAGE_TYPES)))
+        return image
+
+    def clean_avatar(self):
+        return self._validate_image(
+            self.cleaned_data.get('avatar'), self.MAX_AVATAR_MB, '头像')
+
+    def clean_background(self):
+        return self._validate_image(
+            self.cleaned_data.get('background'), self.MAX_BACKGROUND_MB, '背景图')

@@ -1,0 +1,125 @@
+{% extends 'share_layout/base.html' %}
+{% load i18n %}
+
+{% block title %}个人资料 - {{ SITE_NAME }}{% endblock %}
+
+{% block content %}
+<div class="mx-auto max-w-3xl px-4 py-8">
+
+    <h1 class="mb-1 text-2xl font-bold tracking-tight text-foreground">个人资料</h1>
+    <p class="mb-6 text-sm text-muted-foreground">
+        头像与背景图会保存在你自己的账号目录下，登录后按数据库里记录的路径自动加载。
+    </p>
+
+    {% if saved %}
+    <div class="mb-6 flex items-center gap-2 rounded-xl border border-emerald-500/40 bg-emerald-500/10 px-4 py-3 text-sm text-emerald-600 dark:text-emerald-400">
+        <svg class="size-4 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24" aria-hidden="true">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+        </svg>
+        资料已保存。
+    </div>
+    {% endif %}
+
+    {% if form.non_field_errors %}
+    <div class="mb-6 rounded-xl border border-red-500/40 bg-red-500/10 px-4 py-3 text-sm text-red-500">
+        {{ form.non_field_errors|join:' ' }}
+    </div>
+    {% endif %}
+
+    <form method="post" enctype="multipart/form-data" class="space-y-5">
+        {% csrf_token %}
+
+        {# ---------------- 头像 ---------------- #}
+        <section class="rounded-xl border border-border bg-card p-5 shadow-sm">
+            <h2 class="mb-4 text-base font-semibold text-foreground">头像</h2>
+            <div class="flex flex-wrap items-center gap-5">
+                {% if user.avatar_url %}
+                <img src="{{ user.avatar_url }}" alt="当前头像" class="user-avatar user-avatar-lg">
+                {% else %}
+                <span class="user-avatar-fallback user-avatar-lg">{{ user.display_name|slice:':1' }}</span>
+                {% endif %}
+                <div class="min-w-0 flex-1">
+                    {{ form.avatar }}
+                    <p class="mt-2 text-xs text-muted-foreground">
+                        支持 jpg / png / gif / webp / bmp，不超过 5 MB。未上传时显示昵称首字。
+                    </p>
+                    {% if form.avatar.errors %}
+                    <p class="mt-1 text-xs text-red-500">{{ form.avatar.errors|join:' ' }}</p>
+                    {% endif %}
+                </div>
+            </div>
+        </section>
+
+        {# ---------------- 个人背景图 ---------------- #}
+        <section class="rounded-xl border border-border bg-card p-5 shadow-sm">
+            <h2 class="mb-1 text-base font-semibold text-foreground">个人背景图</h2>
+            <p class="mb-4 text-xs text-muted-foreground">
+                上传后，登录本账号时页面背景就是这张图；其他用户看到的是他们自己的背景。
+            </p>
+
+            {% if user.background_url %}
+            <img src="{{ user.background_url }}" alt="当前背景图" class="background-preview mb-4">
+            {% endif %}
+
+            {{ form.background }}
+            <p class="mt-2 text-xs text-muted-foreground">不超过 10 MB，建议横向大图。</p>
+            {% if form.background.errors %}
+            <p class="mt-1 text-xs text-red-500">{{ form.background.errors|join:' ' }}</p>
+            {% endif %}
+        </section>
+
+        {# ---------------- 基本信息 ---------------- #}
+        <section class="rounded-xl border border-border bg-card p-5 shadow-sm">
+            <h2 class="mb-4 text-base font-semibold text-foreground">基本信息</h2>
+
+            <div class="space-y-4">
+                <div>
+                    <label for="{{ form.nickname.id_for_label }}"
+                           class="mb-1.5 block text-sm font-medium text-foreground">昵称</label>
+                    <input type="text"
+                           name="{{ form.nickname.html_name }}"
+                           id="{{ form.nickname.id_for_label }}"
+                           value="{{ form.nickname.value|default_if_none:'' }}"
+                           placeholder="留空则显示用户名"
+                           class="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground transition-colors focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20">
+                    {% if form.nickname.errors %}
+                    <p class="mt-1 text-xs text-red-500">{{ form.nickname.errors|join:' ' }}</p>
+                    {% endif %}
+                </div>
+
+                <div>
+                    <label for="{{ form.email.id_for_label }}"
+                           class="mb-1.5 block text-sm font-medium text-foreground">邮箱</label>
+                    <input type="email"
+                           name="{{ form.email.html_name }}"
+                           id="{{ form.email.id_for_label }}"
+                           value="{{ form.email.value|default_if_none:'' }}"
+                           placeholder="用于找回密码"
+                           class="w-full rounded-lg border border-border bg-background px-3 py-2 text-sm text-foreground transition-colors focus:border-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500/20">
+                    {% if form.email.errors %}
+                    <p class="mt-1 text-xs text-red-500">{{ form.email.errors|join:' ' }}</p>
+                    {% endif %}
+                </div>
+
+                <div class="flex items-center gap-2 rounded-lg bg-secondary/50 px-3 py-2 text-xs text-muted-foreground">
+                    <span class="font-medium text-foreground">用户名</span>
+                    <span>{{ user.username }}</span>
+                    <span class="text-border">·</span>
+                    <span>用户名不可修改</span>
+                </div>
+            </div>
+        </section>
+
+        <div class="flex items-center gap-3">
+            <button type="submit"
+                    class="rounded-lg bg-primary-500 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-primary-600">
+                保存
+            </button>
+            <a href="{% url 'blog:index' %}"
+               class="rounded-lg border border-border px-5 py-2.5 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground">
+                返回首页
+            </a>
+        </div>
+    </form>
+</div>
+{% endblock %}

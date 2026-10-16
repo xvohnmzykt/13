@@ -1,0 +1,158 @@
+/* --------------------------------------------------------------------------
+   用户头像 / 个人背景图
+   --------------------------------------------------------------------------
+   独立样式表，不依赖 Tailwind 重新构建，所有页面通过 base.html 引入。
+   头像与背景图的实际存放路径由 BlogUser 的 upload_to 决定：
+       uploads/user/<账号>/avatar/<文件名>
+       uploads/user/<账号>/Background/<文件名>
+   数据库里保存相对 MEDIA_ROOT 的路径，模板通过 user.avatar_url / user.background_url 读取。
+   -------------------------------------------------------------------------- */
+
+/* --------------------------------------------------------------------------
+   1. 登录后的个人背景图
+   --------------------------------------------------------------------------
+   路径写在行内 style 的 --user-background 上（由 base.html 从数据库取值渲染），
+   未登录或未上传时不带 data-user-background 属性，样式完全不生效。
+   -------------------------------------------------------------------------- */
+body[data-user-background] {
+    background-image: var(--user-background);
+    background-size: cover;
+    background-position: center center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+}
+
+/* 内容区加一层半透明底色，保证背景图上的正文仍然清晰可读。
+   数值越小背景图越明显、正文越依赖卡片自身的底色。
+   想让背景图完全裸露，删掉这条规则即可。 */
+body[data-user-background] #main {
+    background-color: rgb(var(--background) / 0.6);
+}
+
+/* 移动端 fixed 背景在部分浏览器上滚动卡顿，改为随页面滚动 */
+@media (max-width: 1023px) {
+    body[data-user-background] {
+        background-attachment: scroll;
+    }
+}
+
+/* --------------------------------------------------------------------------
+   2. 顶部导航的用户区（头像 + 用户名）
+   -------------------------------------------------------------------------- */
+.user-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: var(--pa-radius, 0.5rem);
+    padding: 0.25rem 0.5rem 0.25rem 0.25rem;
+    transition: background-color 0.15s ease;
+    background: none;
+    border: 0;
+    cursor: pointer;
+    font: inherit;
+}
+
+.user-chip:hover {
+    background-color: rgb(var(--secondary, 241 245 249));
+}
+
+.user-avatar {
+    display: block;
+    width: 2rem;
+    height: 2rem;
+    flex: 0 0 auto;
+    border-radius: 9999px;
+    object-fit: cover;
+    border: 1px solid rgb(var(--border, 229 231 235));
+    background-color: rgb(var(--secondary, 241 245 249));
+}
+
+/* 没有头像时显示用户名首字 */
+.user-avatar-fallback {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 2rem;
+    height: 2rem;
+    flex: 0 0 auto;
+    border-radius: 9999px;
+    border: 1px solid rgb(var(--border, 229 231 235));
+    background-color: rgb(var(--color-primary-500, 102 126 234) / 0.15);
+    color: rgb(var(--color-primary-500, 102 126 234));
+    font-size: 0.8125rem;
+    font-weight: 600;
+    line-height: 1;
+    text-transform: uppercase;
+}
+
+.user-name {
+    max-width: 8rem;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.8125rem;
+    font-weight: 500;
+}
+
+/* 大尺寸头像（资料页预览用） */
+.user-avatar-lg,
+.user-avatar-fallback.user-avatar-lg {
+    width: 5rem;
+    height: 5rem;
+    font-size: 1.75rem;
+}
+
+/* --------------------------------------------------------------------------
+   3. 个人资料页的上传控件
+   -------------------------------------------------------------------------- */
+.upload-input {
+    display: block;
+    width: 100%;
+    font-size: 0.8125rem;
+    color: rgb(var(--muted-foreground, 100 116 139));
+}
+
+.upload-input::file-selector-button {
+    margin-right: 0.75rem;
+    padding: 0.45rem 0.9rem;
+    border: 0;
+    border-radius: 0.5rem;
+    background-color: rgb(var(--color-primary-500, 102 126 234) / 0.12);
+    color: rgb(var(--color-primary-500, 102 126 234));
+    font-size: 0.8125rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.15s ease;
+}
+
+.upload-input::file-selector-button:hover {
+    background-color: rgb(var(--color-primary-500, 102 126 234) / 0.22);
+}
+
+/* Django ClearableFileInput 的「当前文件 / 更换 / 清除」区域 */
+.upload-input + .file-upload,
+p.file-upload {
+    margin: 0 0 0.5rem;
+    font-size: 0.8125rem;
+    color: rgb(var(--muted-foreground, 100 116 139));
+}
+
+p.file-upload a {
+    color: rgb(var(--color-primary-500, 102 126 234));
+    text-decoration: underline;
+}
+
+p.file-upload input[type="checkbox"] {
+    margin: 0 0.25rem 0 0.5rem;
+    vertical-align: -0.1em;
+}
+
+/* 资料页背景图预览：保持比例，避免撑破卡片 */
+.background-preview {
+    display: block;
+    width: 100%;
+    max-height: 12rem;
+    object-fit: cover;
+    border-radius: 0.5rem;
+    border: 1px solid rgb(var(--border, 229 231 235));
+}

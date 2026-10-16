@@ -1,0 +1,27 @@
+{% extends "admin/base.html" %}
+{% load i18n static %}
+
+{% comment %}
+    后台管理站点模板
+    - 复用 Django admin 的 base.html，只覆盖品牌区与样式引入；
+    - 引入 platform_admin/css/admin.css，把配色 / 圆角 / 字体对齐前台设计系统。
+{% endcomment %}
+
+{% block title %}{% if subtitle %}{{ subtitle }} | {% endif %}{{ title }} | {{ site_title|default:_('Django site admin') }}{% endblock %}
+
+{% block extrastyle %}
+  {{ block.super }}
+  <link rel="stylesheet" href="{% static 'platform_admin/css/admin.css' %}">
+{% endblock %}
+
+{% block branding %}
+<div id="site-name">
+  <h1><a href="{% url 'admin:index' %}">{{ site_header|default:_('Django administration') }}</a></h1>
+  <a class="pa-site-link" href="/" title="返回前台首页">返回前台</a>
+</div>
+{% if user.is_anonymous %}
+  {% include "admin/color_theme_toggle.html" %}
+{% endif %}
+{% endblock %}
+
+{% block nav-global %}{% endblock %}

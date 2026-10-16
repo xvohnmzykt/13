@@ -16,10 +16,14 @@
             </div>
         </a>
         <h1 class="mt-4 text-2xl font-bold tracking-tight text-foreground">
-            {% trans 'Welcome Back' %}
+            {% if is_admin_login %}后台管理登录{% else %}{% trans 'Welcome Back' %}{% endif %}
         </h1>
         <p class="mt-2 text-sm text-muted-foreground">
-            {% trans 'Sign in to your account' %}
+            {% if is_admin_login %}
+                请使用管理员账号登录；非管理员账号将返回前台首页
+            {% else %}
+                {% trans 'Sign in to your account' %}
+            {% endif %}
         </p>
     </div>
 

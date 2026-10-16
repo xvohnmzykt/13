@@ -42,14 +42,27 @@
                             {{ message }}
                         </h1>
 
+                        {# Optional hint #}
+                        {% if hint %}
+                            <p class="mx-auto mt-3 max-w-md text-sm leading-relaxed text-muted-foreground">
+                                {{ hint }}
+                            </p>
+                        {% endif %}
+
                         {# Action buttons - unified style #}
                         <div class="flex flex-wrap items-center justify-center gap-3 mt-8">
+                            {% if show_login_link %}
+                                <a href="{% url 'account:login' %}"
+                                   class="rounded-lg bg-primary-500 px-5 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90">
+                                    重新登录
+                                </a>
+                            {% endif %}
                             <a href="/"
-                               class="rounded-lg bg-primary px-5 py-2 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90">
+                               class="{% if show_login_link %}rounded-lg border border-border px-5 py-2 text-sm font-medium text-foreground transition-colors hover:text-primary-500{% else %}rounded-lg bg-primary-500 px-5 py-2 text-sm font-medium text-white transition-opacity hover:opacity-90{% endif %}">
                                 {% trans 'Home Page' %}
                             </a>
                             <a href="javascript:history.back()"
-                               class="rounded-lg border border-border px-5 py-2 text-sm font-medium text-foreground transition-colors hover:text-primary">
+                               class="rounded-lg border border-border px-5 py-2 text-sm font-medium text-foreground transition-colors hover:text-primary-500">
                                 {% trans 'Go back' %}
                             </a>
                         </div>
